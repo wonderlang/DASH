@@ -1,12 +1,12 @@
-![DASH](wonder.png?raw=true)
+![Wonder](wonder.png?raw=true)
 
 [![NPM](https://nodei.co/npm/wonderlang.png?downloads=true)](https://npmjs.org/package/wonderlang)
 
 [![NPM](https://nodei.co/npm-dl/wonderlang.png?months=6&height=3)](https://nodei.co/npm/wonderlang/)
 
-Are you a functional elitist? Are you a lazy coder? Do you just _love_ esolangs? If so, then DASH is for you.
+Are you a functional elitist? Are you a lazy coder? Do you just _love_ esolangs? If so, then Wonder is for you.
 
-DASH is a general-purpose functional programming language influenced by countless other programming languages, especially Haskell, Lisp, and Javascript. Although meant to be a practical language, DASH does contain some... golfy... syntax structures.
+Wonder is a general-purpose functional programming language influenced by countless other programming languages, especially Haskell, Lisp, and Javascript. Although meant to be a practical language, wonder does contain some... golfy... syntax structures.
 
 For installation/docs, visit the [wiki](https://github.com/molarmanful/wonderlang/wiki).
 
