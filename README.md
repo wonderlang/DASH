@@ -1,10 +1,4 @@
-<b>
-```
-|    | _ __  _|__ __
-|_/\_|(_)| )(_|(_ |_)
- _____________ (__| \_
-```
-</b>
+![wonder](wonder.png?raw=true)
 
 [![NPM](https://nodei.co/npm/wonderlang.png?downloads=true)](https://npmjs.org/package/wonderlang)
 
