@@ -1,23 +1,23 @@
 {
-  "name": "dashlang",
-  "version": "0.5.3",
+  "name": "wonderlang",
+  "version": "1.0.0",
   "preferGlobal": true,
   "description": "Easy, functional, lazy.",
   "main": "interpreter.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/molarmanful/DASH.git"
+    "url": "git+https://github.com/wonderlang/wonder.git"
   },
   "author": "Benjamin Pang",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/molarmanful/DASH/issues"
+    "url": "https://github.com/wonderlang/wonder/issues"
   },
   "bin": {
-    "dash": "./interpreter.js",
+    "wonder": "./interpreter.js",
     "delishusly": "./pm.js"
   },
-  "homepage": "https://github.com/molarmanful/DASH#readme",
+  "homepage": "https://github.com/wonderlang/wonder#readme",
   "dependencies": {
     "decimal.js": "^6.0.0",
     "flags": "^0.1.3",

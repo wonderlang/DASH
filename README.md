@@ -1,14 +1,14 @@
-![DASH](dash.png?raw=true)
+![DASH](wonder.png?raw=true)
 
-[![NPM](https://nodei.co/npm/dashlang.png?downloads=true)](https://npmjs.org/package/dashlang)
+[![NPM](https://nodei.co/npm/wonderlang.png?downloads=true)](https://npmjs.org/package/wonderlang)
 
-[![NPM](https://nodei.co/npm-dl/dashlang.png?months=6&height=3)](https://nodei.co/npm/dashlang/)
+[![NPM](https://nodei.co/npm-dl/wonderlang.png?months=6&height=3)](https://nodei.co/npm/wonderlang/)
 
 Are you a functional elitist? Are you a lazy coder? Do you just _love_ esolangs? If so, then DASH is for you.
 
 DASH is a general-purpose functional programming language influenced by countless other programming languages, especially Haskell, Lisp, and Javascript. Although meant to be a practical language, DASH does contain some... golfy... syntax structures.
 
-For installation/docs, visit the [wiki](https://github.com/molarmanful/DASH/wiki).
+For installation/docs, visit the [wiki](https://github.com/molarmanful/wonderlang/wiki).
 
 #Features
 - Mostly functional, with some side effects
