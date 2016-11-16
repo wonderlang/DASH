@@ -1,6 +1,6 @@
 *.swp
 node_modules
 *.log
-*.dash
+*.wr
 .prompt_hist.txt
-dpm
+wpm
