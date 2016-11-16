@@ -21,6 +21,7 @@ d.config({
 })
 fg.defineBoolean('expr',true)
 fg.defineString('f')
+fg.defineString('e')
 fg.defineNumber('tk',10)
 fg.parse()
 
@@ -45,7 +46,7 @@ tru=x=>(
         0
       :x.type=='num'?
         +(x.body!=0)
-      :x.type=='str'||x.type=='ls'?
+      :x.type=='str'||x.type=='ls'||x.type=='obj'?
         +!!len(x)
       :x.type=='bool'?
         x.body
@@ -96,7 +97,7 @@ form=x=>
     `\x1b[37mR"${x.body.source}""${x.body.flags}"\x1b[0m`
   :x.type=='ev'?
     `{${x.body.map(form).join`;`}}${form(x.f)}\\${form(x.g)}`
-  :error('failed to format JSON\n'+JSON.stringify(x),1),
+  :error('failed to format JSON\n'+JSON.stringify(x),halt),
 sform=x=>
   x.type=='num'?
     (''+x.body).replace(/Infinity/g,'oo').replace(/-/g,'_')
@@ -122,14 +123,14 @@ sform=x=>
     '[rgx]'
   :x.type=='ev'?
     `{ev ${sform(x.f)} ${sform(x.g)}}`
-  :error('failed to format JSON\n'+JSON.stringify(x),1),
+  :error('failed to format JSON\n'+JSON.stringify(x),halt),
 
 pkg=x=>{
   try{
     f=fs.readFileSync((`dpm/${x}/`+fs.readFileSync(`dpm/${x}/pkg`)).replace(/\s/g,''))+''
   }
   catch(e){
-    error(`failed to read package "${x}"\n`,1)
+    error(`failed to read package "${x}"\n`,halt)
   }
   return exec(parser.parse(f))
 },
@@ -409,7 +410,7 @@ I=x=>
         cm[z.body].length>1?
           pt(z.body,I(x.f),z.rev)
         :I(cm[z.body](I(x.f)))
-      :error(`undefined function "${z.body}"`,1)
+      :error(`undefined function "${z.body}"`,halt)
     :z.type=='def'?
       I(ua(z,x.f).body)
     :z.type=='pt'?
@@ -424,6 +425,8 @@ exec=x=>tr(x).map(function(a){
   else if(a&&(a.type=='app'||a.type=='var'||a.type=='cond'||a.type=='ev'))return 1
 }).length?exec(I(x)):I(x)
 
+halt=1
+
 if(require.main!=module){
   module.exports=this
 }else if(F=fg.get('f')){
@@ -433,11 +436,20 @@ if(require.main!=module){
     ps&&ps.length&&(fg.get('expr')?console.log('\n'+form(exec(ps))):exec(ps))
     console.log('')
   }catch(e){
-    error(ERR(e),1)
+    error(ERR(e),halt)
+  }
+}else if(E=fg.get('e')){
+  try{
+    ps=parser.parse(E)
+    ps&&ps.length&&(fg.get('expr')?console.log('\n'+form(exec(ps))):exec(ps))
+    console.log('')
+  }catch(e){
+    error(ERR(e),halt)
   }
 }else{
   logo=fs.readFileSync(__dirname+'/wonder.txt')+''
   pkg=fs.readFileSync(__dirname+'/package.json')+''
+  halt=0
   console.log(`\x1b[36m\x1b[1m${logo}\x1b[0m\n\n\x1b[93m\x1b[1mv${JSON.parse(pkg).version}\x1b[21m\n\x1b[2mMade with love by under the MIT License.\x1b[0m\n\n`)
   key(process.stdin)
   ow=x=>(process.stdout.clearLine(),process.stdout.cursorTo(0),process.stdout.write(x))
@@ -460,7 +472,7 @@ if(require.main!=module){
     try{
       console.log('\n'+form(exec(parser.parse(p))))
     }catch(e){
-      error(ERR(e))
+      error(ERR(e,halt))
     }
   }
 }
