@@ -1,8 +1,8 @@
-```
+<b>```
 |    | _ __  _|__ __
 |_/\_|(_)| )(_|(_ |_)
- _____________ (__| \
-```
+ _____________ (__| \_
+```</b>
 
 [![NPM](https://nodei.co/npm/wonderlang.png?downloads=true)](https://npmjs.org/package/wonderlang)
 
