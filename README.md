@@ -8,7 +8,7 @@ Are you a functional elitist? Are you a lazy coder? Do you just _love_ esolangs?
 
 Wonder is a general-purpose functional programming language influenced by countless other programming languages, especially Haskell, Lisp, and Javascript. Although meant to be a practical language, wonder does contain some... golfy... syntax structures.
 
-For installation/docs, visit the [wiki](https://github.com/molarmanful/wonderlang/wiki).
+For installation/docs, visit the [wiki](https://github.com/wonderlang/wonder/wiki).
 
 #Features
 - Mostly functional, with some side effects
