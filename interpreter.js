@@ -22,13 +22,13 @@ d.config({
 fg.defineBoolean('expr',true)
 fg.defineString('f')
 fg.defineString('e')
-fg.defineNumber('tk',10)
+fg.defineNumber('tk',1e3)
 fg.parse()
 
 const lex=fs.readFileSync(__dirname+'/wonder.pegjs')+'',
 parser=peg.generate(lex),
 
-lng=(x,y=0)=>y<Number.MAX_VALUE?l(x).first()!=[]._?lng(l(x).rest(),y+1)+1:0:1/0,
+lng=(x,y=0)=>x.drop(Number.MAX_SAFE_INTEGER).first()!=[]._?1/0:l(x).first()!=[]._?lng(l(x).rest(),y+1)+1:0,
 len=x=>{
   try{
     return x.body.length()
@@ -76,7 +76,7 @@ form=x=>
   :x.type=='bool'?
     `\x1b[36m${x.body?'T':'F'}\x1b[0m`
   :x.type=='ls'?
-    `[${isFinite(len(x))?x.body.map(I).map(form).value().join`;`:x.body.take(fg.get('tk')).map(I).map(form).join(';')+';...'}]`
+    `[${x.body.take(fg.get('tk')).map(I).map(form).join(';')+(x.body.get(fg.get('tk')+1)?';...':'')}]`
   :x.type=='obj'?
     `{${l(x.body).map((a,b)=>'\x1b[32m"'+b+'"\x1b[0m\\'+form(a)).value().join`;`}}`
   :x.type=='def'?
@@ -106,7 +106,7 @@ sform=x=>
   :x.type=='bool'?
     x.body?'T':'F'
   :x.type=='ls'?
-    `[ls ${isFinite(len(x))?len(x):'oo'}]`
+    `[ls ${len(x)}]`
   :x.type=='obj'?
     `{obj ${x.body.keys().size()}}`
   :x.type=='def'?
@@ -191,15 +191,15 @@ cm={
   lteq:(x,y)=>tru(+d(''+num(x.body).body).lte(''+num(y.body).body)),
   gteq:(x,y)=>tru(+d(''+num(x.body).body).gte(''+num(y.body).body)),
   neg:x=>num(d(x.body).neg()),
-  map:(x,y)=>ls(y.body.map(a=>y.body.charAt?str(a):a).map(a=>I(app(x,a)))),
-  fold:(x,y)=>y.body.map(a=>y.body.charAt?str(a):a).reduce((a,b)=>I(app(app(x.body.get(0),b),a)),x.body.get(1)),
-  foldr:(x,y)=>y.body.map(a=>y.body.charAt?str(a):a).reduceRight((a,b)=>I(app(app(x.body.get(0),b),a)),x.body.get(1)),
-  tkwl:(x,y)=>ls(y.body.map(a=>y.body.charAt?str(a):a).takeWhile(a=>tru(I(app(x,a))).body)),
-  drwl:(x,y)=>ls(y.body.map(a=>y.body.charAt?str(a):a).takeWhile(a=>tru(I(app(x,a))).body)),
-  fltr:(x,y)=>ls(y.body.map(a=>y.body.charAt?str(a):a).filter(a=>tru(I(app(x,a))).body)),
-  find:(x,y)=>y.body.map(a=>y.body.charAt?str(a):a).find(a=>tru(I(app(x,a))).body),
-  every:(x,y)=>tru(y.body.map(a=>y.body.charAt?str(a):a).every(a=>tru(I(app(x,a))).body)),
-  some:(x,y)=>tru(y.body.map(a=>y.body.charAt?str(a):a).some(a=>tru(I(app(x,a))).body)),
+  map:(x,y)=>ls(y.body.map(a=>I(app(x,y.body.charAt?str(a):a)))),
+  fold:(x,y)=>y.body.reduce((a,b)=>I(app(app(x.body.get(0),b),y.body.charAt?str(a):a)),x.body.get(1)),
+  foldr:(x,y)=>y.body.reduceRight((a,b)=>I(app(app(x.body.get(0),b),y.body.charAt?str(a):a)),x.body.get(1)),
+  tkwl:(x,y)=>ls(y.body.takeWhile(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
+  drwl:(x,y)=>ls(y.body.dropWhile(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
+  fltr:(x,y)=>ls(y.body.filter(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
+  find:(x,y)=>y.body.find(a=>tru(I(app(x,y.body.charAt?str(a):a))).body),
+  every:(x,y)=>tru(y.body.every(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
+  some:(x,y)=>tru(y.body.some(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   len:x=>num(len(x)),
   get:(x,y)=>y.type=='obj'?l(y.body).get(''+x.body):y.body.map(a=>a.charAt?str(a):a).get(0|d.mod(0|num(x.body).body,len(y))),
   set:(x,y)=>
@@ -227,7 +227,7 @@ cm={
   S:(x,y)=>I(app(x,y)),
   sleep:x=>(slp.usleep(0|num(x.body).body),x),
   tt:x=>(x.rev=1,x),
-  sort:(x,y)=>ls(y.body.map(a=>a.charAt?str(a):a).sortBy(a=>num(I(app(x,a)).body).body)),
+  sort:(x,y)=>ls(y.body.sortBy(a=>num(I(app(x,y.body.charAt?str(a):a)).body).body)),
   shuf:x=>ls((x.body.charAt?x.body.map(str):x.body).shuffle()),
   type:x=>str(x.type),
   sum:x=>num(x.body.reduce((a,b)=>d.add(a,''+num(b.body).body),0)),
@@ -285,7 +285,9 @@ cm={
   zip:(x,y)=>cm.map(I(app(fn('sS'),x)),cm.tsp(y)),
   flat:x=>ls(x.body.map(a=>x.body.charAt?str(a):a.type=='ls'?a.body:a).flatten()),
   obj:x=>obj(x.body.map(a=>[sform(a.body.first()),(A=a.body.get(1)).charAt?str(A):A]).toObject()),
-  obl:x=>cm.obj(cm.tsp(ls([cm.key(x),x])))
+  obl:x=>cm.obj(cm.tsp(ls([cm.key(x),x]))),
+  head:x=>ls(x.body.first()),
+  tail:x=>ls(x.body.rest())
 };
 
 [
@@ -331,7 +333,9 @@ cm={
   ['$','xor'],
   ['!','not'],
   ["'",'tsp'],
-  [',','ind']
+  [',','ind'],
+  ['*|','head'],
+  ['|*','tail']
 ].map(a=>cm[a[0]]=cm[a[1]])
 //.map(x=>`\`${x[0]}\`|`+x[1]).join`\n`
 
