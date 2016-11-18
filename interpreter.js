@@ -177,14 +177,8 @@ cm={
   trunc:x=>num(d.trunc(''+num(x.body).body)),
   cmp:(x,y)=>tru(d(''+num(x.body).body).cmp(''+num(y.body).body)),
   eq:(x,y)=>tru(
-    form(x)==form(y)
+    form(x.type=='obj'?obj(x.body.sort().toObject()):x)==form(y.type=='obj'?obj(y.body.sort().toObject()):y)
     ||(x.body.charAt&&y.body.charAt&&''+num(x.body).body==''+num(y.body).body)
-    ||(x.type=='obj'&&y.type=='obj'&&x.body.length==y.body.length&&(
-        x.body.every((a,b)=>cm.eq(a,y.body.get(b)).body)
-      ))
-    ||(x.type=='ls'&&y.type=='ls'&&x.body.every((a,b)=>
-        cm.eq(x.body.charAt?str(a):a,y.body.charAt?str(y.body.get(b)):y.body.get(b)).body
-      ))
   ),
   gt:(x,y)=>tru(+d(''+num(x.body).body).cmp(''+num(y.body).body)==1),
   lt:(x,y)=>tru(+d(''+num(x.body).body).cmp(''+num(y.body).body)==-1),
@@ -219,7 +213,7 @@ cm={
   rnd:x=>num(0|num(x.body).body?d.random(0|num(x.body).body):''+0|d.random()*2),
   con:(x,y)=>x.type!='ls'?str(sform(x)+sform(y)):ls(x.body.concat(y.type!='ls'?y:y.body)),
   cat:(x,y)=>x.type!='ls'?str(sform(x)+sform(y)):ls(x.body.concat(y)),
-  rev:x=>ls(x.body.reverse().map(a=>a.type||str(a))),
+  rev:x=>ls(x.body.map(a=>x.body.charAt?str(a):a).reverse()),
   rng:(x,y)=>([X,Y]=[+x.body,+y.body],ls(l.generate(a=>num(d.add(a,''+num(x.body).body)),Y-X))),
   str:x=>str(sform(x)),
   src:x=>str(form(x).replace(/\x1b\[\d+m/g,'')),
@@ -258,10 +252,19 @@ cm={
   gen:x=>ls(l.generate(a=>app(x,num(a)),1/0)),
   genc:(x,y)=>ls(l.generate(a=>y=a?app(x,y):y,1/0)),
   rpt:x=>ls(l.repeat(x,1/0)),
-  inx:(x,y)=>ls(x.body.intersection(y.body).map(a=>a.charAt?str(a):a)),
-  uni:(x,y)=>ls(x.body.union(y.body).map(a=>a.charAt?str(a):a)),
-  unq:x=>ls(x.body.uniq().map(a=>a.charAt?str(a):a)),
-  dff:(x,y)=>ls(x.body.difference(y.body).map(a=>a.charAt?str(a):a)),
+  inx:(x,y)=>(
+    [X,Y]=[x.body.map(a=>x.body.charAt?str(a):a),y.body.map(a=>y.body.charAt?str(a):a)],
+    ls(X.filter(a=>Y.find(b=>cm.eq(a,b).body)))
+  ),
+  uni:(x,y)=>cm.unq(cm.flat(ls([ls(x.body.map(a=>a.charAt?str(a):a)),ls(y.body.map(a=>a.charAt?str(a):a))]))),
+  unq:x=>ls(x.body.map(i=>i.charAt?str(i):i).uniq(a=>form(a.type=='obj'?obj(a.body.sort().toObject()):a))),
+  dff:(x,y)=>(
+    [X,Y]=[x.body.map(a=>x.body.charAt?str(a):a),y.body.map(a=>y.body.charAt?str(a):a)],
+    A=X.concat(Y),
+    ls(X.filter(a=>
+      !Y.find(b=>cm.eq(a,b).body)
+    ))
+  ),
   exit:x=>{process.exit()},
   sh:x=>str(Exec(''+x.body)+''),
   while:(x,y)=>([X,Y]=[x.body.get(0),x.body.get(1)],tru(I(app(X,y))).body?cm.while(x,I(app(Y,y))):y),
@@ -286,8 +289,6 @@ cm={
   flat:x=>ls(x.body.map(a=>x.body.charAt?str(a):a.type=='ls'?a.body:a).flatten()),
   obj:x=>obj(x.body.map(a=>[sform(a.body.first()),(A=a.body.get(1)).charAt?str(A):A]).toObject()),
   obl:x=>cm.obj(cm.tsp(ls([cm.key(x),x]))),
-  head:x=>ls(x.body.first()),
-  tail:x=>ls(x.body.rest())
 };
 
 [
@@ -404,10 +405,12 @@ I=x=>
     num(x.body)
   :x.type=='var'?
     (vs[x.body.body]=I(x.f))
-  :(x.type=='ref'||x.type=='fn')&&vs[x.body]?
-    vs[x.body].call?
-      vs[x.body]()
-    :vs[x.body]
+  :(x.type=='ref'||x.type=='fn')?
+    vs[x.body]?
+      vs[x.body].call?
+        vs[x.body]()
+      :vs[x.body]
+    :fn(x.body)
   :x.type=='app'?
     (z=I(x.body)).type=='fn'?
       cm[z.body]?
