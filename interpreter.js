@@ -455,7 +455,7 @@ if(require.main!=module){
   logo=fs.readFileSync(__dirname+'/wonder.txt')+''
   pkg=fs.readFileSync(__dirname+'/package.json')+''
   halt=0
-  console.log(`\x1b[36m\x1b[1m${logo}\x1b[0m\n\n\x1b[93m\x1b[1mv${JSON.parse(pkg).version}\x1b[21m\n\x1b[2mMade with love by under the MIT License.\x1b[0m\n\n`)
+  console.log(`\x1b[36m\x1b[1m${logo}\x1b[0m\n\n\x1b[93m\x1b[1mv${JSON.parse(pkg).version}\x1b[21m\n\x1b[2mMade with love under the MIT License.\x1b[0m\n\n`)
   key(process.stdin)
   ow=x=>(process.stdout.clearLine(),process.stdout.cursorTo(0),process.stdout.write(x))
   Prompt=require('prompt-sync')({
