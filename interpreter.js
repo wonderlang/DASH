@@ -195,11 +195,11 @@ cm={
   every:(x,y)=>tru(y.body.every(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   some:(x,y)=>tru(y.body.some(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   len:x=>num(len(x)),
-  get:(x,y)=>(
+  get:(x,y)=>I((
     y.type=='obj'?
       l(y.body).get(''+x.body)
     :y.body.map(a=>a.charAt?str(a):a).get(0|d.mod(0|num(x.body).body,len(y)))
-  )||tru(0),
+  )||tru(0)),
   set:(x,y)=>
     y.type=='obj'?
       (X={},X[x.body.get(0).body]=x.body.get(1),obj(y.body.assign(X)))
