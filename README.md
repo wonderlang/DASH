@@ -31,7 +31,7 @@ while[
   1
   @[
     get 1 #0
-    oN + get 0 #0 get 1 #0
+    oN + 0`#0 1`#0
   ]
 ][oN 1; oN 1]
 ```
