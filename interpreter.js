@@ -200,10 +200,14 @@ cm={
     y.type=='obj'?
       (X={},X[x.body.get(0).body]=x.body.get(1),obj(y.body.assign(X)))
     :ls(y.body.map(a=>y.type=='str'?str(a):a).map((a,b)=>b==''+d.mod(''+x.body.get(0).body,len(y))?x.body.get(1):a)),
-  ins:(x,y)=>(
-    Y=y.body.map(a=>y.type=='str'?str(a):a),
-    ls(Y.first(d.mod(''+x.body.get(0).body,len(y))).concat(x.body.get(1),Y.last(len(y)-d.mod(''+x.body.get(0).body,len(y)))))
-  ),
+  ins:(x,y)=>
+    y.type=='obj'?
+      cm.set(x,y)
+    :(
+      Y=y.body.map(a=>y.type=='str'?str(a):a),
+      ls(Y.first(d.mod(''+x.body.get(0).body,len(y))).concat(x.body.get(1),
+      Y.last(len(y)-d.mod(''+x.body.get(0).body,len(y)))))
+    ),
   join:(x,y)=>str(y.body.map(sform).join(sform(x))),
   split:(x,y)=>ls(XRE.split(''+y.body,rgx(x)).map(str)),
   tc:x=>ls(x.body.map(a=>num(a.codePointAt()))),
