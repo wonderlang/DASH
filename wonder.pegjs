@@ -92,7 +92,7 @@ a=a:('#'[0-9]+){
     body:+a[1].join``
   }
 }
-ref=a:('#'fn){
+ref=a:('#'(fn/arg/ls/obj)){
   return{
     type:'ref',
     body:a[1].body

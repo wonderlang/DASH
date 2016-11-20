@@ -416,7 +416,7 @@ I=x=>
       vs[x.body].call?
         vs[x.body]()
       :vs[x.body]
-    :fn(x.body)
+    :x.type=='ref'?fn(x.body):x
   :x.type=='app'?
     (z=I(x.body)).type=='fn'?
       cm[z.body]?
