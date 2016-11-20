@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=str/bin/oct/hex/num/bool/cond/ls/ev/obj/var/aapp/app/def/arg/fn/a/ref
+type=str/bin/get/oct/hex/num/bool/cond/ls/ev/obj/var/aapp/app/def/arg/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -100,7 +100,7 @@ ref=a:('#'fn){
 }
 
 //function reference
-fn=a:[^ \n;0-9".[\]\\(){}@#TF?]+{
+fn=a:[^ \n;0-9".[\]\\(){}@#TF?`]+{
   return{
     type:'fn',
     body:a.join``
@@ -153,5 +153,25 @@ ev='{'a:expr*'}'_*b:var{
     body:a.filter(x=>!x.big),
     f:b.body,
     g:b.f
+  }
+}
+
+//get
+get=a:((num/fn/str)'`'_*)+ b:type{
+  return{
+    type:'app',
+    body:{
+      type:'app',
+      body:{type:'fn',body:'ss'},
+      f:{
+        type:'ls',
+        body:a.map(x=>({
+          type:'app',
+          body:{type:'fn',body:'get'},
+          f:x[0]
+        }))
+      }
+    },
+    f:b
   }
 }
