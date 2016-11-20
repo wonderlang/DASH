@@ -27,13 +27,13 @@ For installation/docs, visit the [wiki](https://github.com/wonderlang/wonder/wik
 
 Fibonacci sequence (overflows really quickly):
 ```
-while[
+(while[
   1
   @[
-    get 1 #0
+    S #0 1
     oN + S #0 0 S #0 1
   ]
-][oN 1; oN 1]
+]) [oN 1; oN 1]
 ```
 
 FizzBuzz:
@@ -43,11 +43,11 @@ FizzBuzz:
   [
     and % #0 3 % #0 5
       ? #0
-      ? con [
+      ? (con [
           % #0 3
             ? ""
             ? "fizz"
-        ] [
+        ]) [
           % #0 5
             ? ""
             ? "buzz"
