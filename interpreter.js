@@ -195,7 +195,11 @@ cm={
   every:(x,y)=>tru(y.body.every(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   some:(x,y)=>tru(y.body.some(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   len:x=>num(len(x)),
-  get:(x,y)=>(y.type=='obj'?l(y.body).get(''+x.body):y.body.map(a=>a.charAt?str(a):a).get(0|d.mod(0|num(x.body).body,len(y))))||tru(0),
+  get:(x,y)=>(
+    y.type=='obj'?
+      l(y.body).get(''+x.body)
+    :y.body.map(a=>a.charAt?str(a):a).get(0|d.mod(0|num(x.body).body,len(y)))
+  )||tru(0),
   set:(x,y)=>
     y.type=='obj'?
       (X={},X[x.body.get(0).body]=x.body.get(1),obj(y.body.assign(X)))
@@ -424,8 +428,8 @@ I=x=>
       I(ua(z,x.f).body)
     :z.type=='pt'?
       z.rev?cm[I(z).body](I(x.f),z.f):cm[I(z).body](z.f,I(x.f))
-    :z.type=='ls'?
-      ls(z.body.map(a=>I(app(a,x.f))))
+    :z.type=='ls'||z.type=='obj'?
+      cm.get(I(x.f),z)
     :z
   :x,
 

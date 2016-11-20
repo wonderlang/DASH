@@ -157,21 +157,10 @@ ev='{'a:expr*'}'_*b:var{
 }
 
 //get
-get=a:((num/fn/str)'`'_*)+ b:type{
+get=a:(ls/obj)b:type{
   return{
     type:'app',
-    body:{
-      type:'app',
-      body:{type:'fn',body:'ss'},
-      f:{
-        type:'ls',
-        body:a.map(x=>({
-          type:'app',
-          body:{type:'fn',body:'get'},
-          f:x[0]
-        }))
-      }
-    },
+    body:a,
     f:b
   }
 }
