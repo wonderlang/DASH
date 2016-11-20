@@ -74,7 +74,7 @@ ls='['a:expr*']'?{
   }),{type:'ls',body:[]})
 }
 //object
-obj='{'_*a:((num/fn/str)_*'\\'_*type _*';'?)*_*'}'?{
+obj='{'_*a:((num/fn/str)_*'\\'_*type _*';'?_*)*_*'}'?{
   var o={}
   return{
     type:'obj',

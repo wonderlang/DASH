@@ -418,7 +418,7 @@ I=x=>
       :vs[x.body]
     :x.type=='ref'?fn(x.body):x
   :x.type=='app'?
-    (z=I(x.body)).type=='fn'?
+    (z=exec(x.body)).type=='fn'?
       cm[z.body]?
         cm[z.body].length>1?
           pt(z.body,I(x.f),z.rev)
