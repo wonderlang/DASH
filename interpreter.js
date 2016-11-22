@@ -86,7 +86,7 @@ form=x=>
   :x.type=='pt'?
     `\x1b[34m${x.body}\x1b[0m `+form(x.f)
   :x.type=='a'||x.type=='ref'?
-    `\x1b[34m#${x.body}\x1b[0m`
+    `\x1b[34m#${form(x.body)}\x1b[0m`
   :x.type=='app'?
     form(x.body)+' '+form(x.f)
   :x.type=='var'?
@@ -411,12 +411,14 @@ I=x=>
     num(x.body)
   :x.type=='var'?
     (vs[x.body.body]=I(x.f))
-  :(x.type=='ref'||x.type=='fn')?
+  :x.type=='ref'?
+    I(x.body)
+  :x.type=='fn'?
     vs[x.body]?
       vs[x.body].call?
         vs[x.body]()
       :vs[x.body]
-    :x.type=='ref'?fn(x.body):x
+    :x
   :x.type=='app'?
     (z=exec(x.body)).type=='fn'?
       cm[z.body]?

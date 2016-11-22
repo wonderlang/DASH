@@ -95,7 +95,7 @@ a=a:('#'[0-9]+){
 ref=a:('#'(fn/arg/ls/obj)){
   return{
     type:'ref',
-    body:a[1].body
+    body:a[1]
   }
 }
 
