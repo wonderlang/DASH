@@ -76,7 +76,7 @@ form=x=>
   :x.type=='bool'?
     `\x1b[36m${x.body?'T':'F'}\x1b[0m`
   :x.type=='ls'?
-    `[${x.body.take(fg.get('tk')).map(I).map(form).join(';')+(x.body.get(fg.get('tk')+1)?';...':'')}]`
+    `[${x.body.take(fg.get('tk')).map(form).join(';')+(x.body.get(fg.get('tk')+1)?';...':'')}]`
   :x.type=='obj'?
     `{${l(x.body).map((a,b)=>'\x1b[32m"'+b+'"\x1b[0m\\'+form(a)).value().join`;`}}`
   :x.type=='def'?
@@ -222,7 +222,7 @@ cm={
   con:(x,y)=>x.type!='ls'?str(sform(x)+sform(y)):ls(x.body.concat(y.type!='ls'?y:y.body)),
   cat:(x,y)=>x.type!='ls'?str(sform(x)+sform(y)):ls(x.body.concat(y)),
   rev:x=>ls(x.body.map(a=>x.body.charAt?str(a):a).reverse()),
-  rng:(x,y)=>([X,Y]=[+x.body,+y.body],ls(l.generate(a=>num(d.add(a,''+num(x.body).body)),Y-X))),
+  rng:(x,y)=>([X,Y]=[+x.body,+y.body],ls(l.generate(a=>num(d.add(a,''+num(x.body).body))).take(Y-X))),
   str:x=>str(sform(x)),
   src:x=>str(form(x).replace(/\x1b\[\d+m/g,'')),
   eval:x=>parser.parse(''+x.body),
@@ -400,9 +400,9 @@ I=x=>
   :x.type=='ev'?
     I(Ua(x.body,x.f,x.g))
   :x.map?
-    (X=x.map(a=>I(a)))[X.length-1]
+    x.reduce((a,b)=>I(b))
   :x.type=='ls'?
-    ls(x.body)
+    ls(x.body.map(I))
   :x.type=='obj'?
     obj(x.body)
   :x.type=='str'?
