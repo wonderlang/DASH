@@ -304,7 +304,7 @@ cm={
   sS:(x,y)=>y.body.reduce((a,b)=>I(app(a,b)),x),
   zip:(x,y)=>cm.map(I(app(fn('sS'),x)),cm.tsp(y)),
   flat:x=>ls(x.body.map(a=>x.body.charAt?str(a):a.type=='ls'?a.body:a).flatten()),
-  obj:x=>obj(x.body.map(a=>[sform(a.body.first()),(A=a.body.get(1)).charAt?str(A):A]).toObject()),
+  obj:x=>obj(x.body.map(a=>[sform((A=a.body.get(0)).charAt?str(A):A),(B=a.body.get(1)).charAt?str(B):B]).toObject()),
   obl:x=>cm.obj(cm.tsp(ls([cm.key(x),x]))),
   pat:(x,y)=>I(app((X=cm.get(y,x)).body?X:cm.get(str('@'),x),y))
 };
