@@ -15,6 +15,7 @@ For installation/docs, visit the [wiki](https://github.com/wonderlang/wonder/wik
 - Lazily evaluated
 - Implements a zero-indexed version of de Bruijn indices
 - Code as data
+- Pattern matching support
 - Mainly prefix-based
 - Float support for up to 1000-digit precision
 - Simple package system
