@@ -92,7 +92,7 @@ form=x=>
   :x.type=='a'?
     `\x1b[34m#${x.body}\x1b[0m`
   :x.type=='ref'?
-    `\x1b[34m#\x1b[0m(${form(x.body)})\x1b[0m`
+    `\x1b[34m#\x1b[0m(${form(x.body)})`
   :x.type=='app'?
     form(x.body)+' '+form(x.f)
   :x.type=='var'?
@@ -188,6 +188,7 @@ cm={
     form(x.type=='obj'?obj(x.body.sort().toObject()):x)==form(y.type=='obj'?obj(y.body.sort().toObject()):y)
     ||(x.body.charAt&&y.body.charAt&&''+num(x.body).body==''+num(y.body).body)
   ),
+  neq:(x,y)=>cm.not(cm.eq(x,y)),
   gt:(x,y)=>tru(+d(''+num(x.body).body).cmp(''+num(y.body).body)==1),
   lt:(x,y)=>tru(+d(''+num(x.body).body).cmp(''+num(y.body).body)==-1),
   lteq:(x,y)=>tru(+d(''+num(x.body).body).lte(''+num(y.body).body)),
@@ -305,6 +306,7 @@ cm={
   flat:x=>ls(x.body.map(a=>x.body.charAt?str(a):a.type=='ls'?a.body:a).flatten()),
   obj:x=>obj(x.body.map(a=>[sform(a.body.first()),(A=a.body.get(1)).charAt?str(A):A]).toObject()),
   obl:x=>cm.obj(cm.tsp(ls([cm.key(x),x]))),
+  pat:(x,y)=>I(app((X=cm.get(y,x)).body?X:cm.get(str('@'),x),y))
 };
 
 [

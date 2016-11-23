@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=str/bin/get/oct/hex/num/bool/cond/ls/ev/obj/var/aapp/app/def/arg/fn/a/ref
+type=str/bin/get/oct/hex/num/bool/cond/ls/ev/obj/pm/var/aapp/app/def/arg/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -79,6 +79,17 @@ obj='{'_*a:((num/fn/str)_*'\\'_*type _*';'?_*)*_*'}'?{
   return{
     type:'obj',
     body:(a.map(x=>o[x[0].body]=x[4]),o)
+  }
+}
+pm='.{'_*a:((num/fn/str)_*'\\'_*type _*';'?_*)*b:type? _*'}'?{
+  var o={}
+  return{
+    type:'app',
+    body:{type:'fn',body:'pat'},
+    f:{
+      type:'obj',
+      body:(a.map(x=>o[x[0].body]=x[4]),Object.assign(o,{'@':b||{type:'bool',body:0}}))
+    }
   }
 }
 //expression list (holds multiple expressions)
@@ -157,7 +168,7 @@ ev='{'a:expr*'}'_*b:var{
 }
 
 //get
-get=a:(ls/obj)b:type{
+get=a:(ls/obj/pm)b:type{
   return{
     type:'app',
     body:a,
