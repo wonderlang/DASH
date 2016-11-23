@@ -76,7 +76,11 @@ form=x=>
   :x.type=='bool'?
     `\x1b[36m${x.body?'T':'F'}\x1b[0m`
   :x.type=='ls'?
-    `[${x.body.take(fg.get('tk')).map(form).join(';')+(x.body.get(fg.get('tk')+1)?';...':'')}]`
+    `[${
+      x.body.take?
+        x.body.take(fg.get('tk')).map(form).join(';')+(x.body.get(fg.get('tk')+1)?';...':'')
+      :x.body.map(form).join('')
+    }]`
   :x.type=='obj'?
     `{${l(x.body).map((a,b)=>'\x1b[32m"'+b+'"\x1b[0m\\'+form(a)).value().join`;`}}`
   :x.type=='def'?
@@ -85,7 +89,9 @@ form=x=>
     `(${x.map(form).join`;`})`
   :x.type=='pt'?
     `\x1b[34m${x.body}\x1b[0m `+form(x.f)
-  :x.type=='a'||x.type=='ref'?
+  :x.type=='a'?
+    `\x1b[34m#${x.body}\x1b[0m`
+  :x.type=='ref'?
     `\x1b[34m#${form(x.body)}\x1b[0m`
   :x.type=='app'?
     form(x.body)+' '+form(x.f)
@@ -101,8 +107,10 @@ form=x=>
 sform=x=>
   x.type=='num'?
     (''+x.body).replace(/Infinity/g,'oo').replace(/-/g,'_')
-  :x.type=='fn'||x.type=='str'||x.type=='a'||x.type=='ref'?
+  :x.type=='fn'||x.type=='str'||x.type=='a'?
     ''+x.body
+  :x.type=='ref'?
+    sform(x.body)
   :x.type=='bool'?
     x.body?'T':'F'
   :x.type=='ls'?
