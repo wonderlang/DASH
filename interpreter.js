@@ -410,7 +410,7 @@ I=x=>
   :x.type=='ev'?
     I(Ua(x.body,x.f,x.g))
   :x.map?
-    x.reduce((a,b)=>I(b))
+    (X=x.map(a=>I(a)))[X.length-1]
   :x.type=='ls'?
     ls(x.body.map(I))
   :x.type=='obj'?
