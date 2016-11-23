@@ -92,7 +92,7 @@ form=x=>
   :x.type=='a'?
     `\x1b[34m#${x.body}\x1b[0m`
   :x.type=='ref'?
-    `\x1b[34m#${form(x.body)}\x1b[0m`
+    `\x1b[34m#\x1b[0m(${form(x.body)})\x1b[0m`
   :x.type=='app'?
     form(x.body)+' '+form(x.f)
   :x.type=='var'?
