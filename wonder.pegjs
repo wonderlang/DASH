@@ -86,16 +86,16 @@ arg='('a:expr*')'?{
   return a.filter(x=>!x.big)
 }
 //argument reference
-a=a:('#'[0-9]+){
+a=a:('#'_*[0-9]+){
   return{
     type:'a',
-    body:+a[1].join``
+    body:+a[2].join``
   }
 }
-ref=a:('#'(fn/arg/ls/obj)){
+ref=a:('#'_*(fn/arg/ls/obj)){
   return{
     type:'ref',
-    body:a[1]
+    body:a[2]
   }
 }
 
