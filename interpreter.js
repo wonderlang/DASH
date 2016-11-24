@@ -54,9 +54,11 @@ tru=x=>(
   }
 ),
 
+O=x=>(console.log(x),x),
+
 str=x=>({type:'str',body:l(x)}),
 num=x=>({type:'num',body:l(isNaN(+x)?x.charAt?''+l(x).map(a=>a.codePointAt()).sum():''+len(ls(x)):(''+d(''+x)).replace(/_/g,'-').replace(/oo/g,'Infinity'))}),
-ls=x=>({type:'ls',body:l(x)}),
+ls=x=>({type:'ls',body:l(x).map(I)}),
 obj=x=>({type:'obj',body:l(x)})
 vr=(x,y)=>({type:'var',body:x,f:y}),
 app=(x,y)=>({type:'app',body:x,f:y}),
@@ -65,6 +67,7 @@ def=x=>({type:'def',body:x}),
 fn=x=>({type:'fn',body:x}),
 a=x=>({type:'a',body:0|x}),
 rgx=x=>x.type=='rgx'?x.body:XRE(x.body),
+pm=x=>({type:'pm',body:x}),
 
 form=x=>
   x.type=='num'?
@@ -103,6 +106,10 @@ form=x=>
     `\x1b[37mR"${x.body.source}""${x.body.flags}"\x1b[0m`
   :x.type=='ev'?
     `{${x.body.map(form).join`;`}}${form(x.f)}\\${form(x.g)}`
+  :x.type=='pm'?
+    `.{${
+      x.body.map(a=>a[0]!='@'&&form(a[0])+'\\'+form(a[1])).filter(a=>a).join`;`
+    };${form(x.body.find(a=>a[0]=='@')[1])}}`
   :error('failed to format JSON\n'+JSON.stringify(x),halt),
 sform=x=>
   x.type=='num'?
@@ -131,6 +138,8 @@ sform=x=>
     '[rgx]'
   :x.type=='ev'?
     `{ev ${sform(x.f)} ${sform(x.g)}}`
+  :x.type=='pm'?
+    `.{pm}`
   :error('failed to format JSON\n'+JSON.stringify(x),halt),
 
 pkg=x=>{
@@ -210,11 +219,13 @@ cm={
     :y.body.map(a=>a.charAt?str(a):a).get(0|d.mod(0|num(x.body).body,len(y)))
   )||tru(0)),
   set:(x,y)=>
-    y.type=='obj'?
+    y.type=='pm'?
+      pm(y.body.concat([[x.body.get(0),x.body.get(1)]]))
+    :y.type=='obj'?
       (X={},X[x.body.get(0).body]=x.body.get(1),obj(y.body.assign(X)))
     :ls(y.body.map(a=>y.type=='str'?str(a):a).map((a,b)=>b==''+d.mod(''+x.body.get(0).body,len(y))?x.body.get(1):a)),
   ins:(x,y)=>
-    y.type=='obj'?
+    y.type=='obj'||y.type=='pm'?
       cm.set(x,y)
     :(
       Y=y.body.map(a=>y.type=='str'?str(a):a),
@@ -228,8 +239,7 @@ cm={
   bool:tru,
   num:x=>num(x.body),
   rnd:x=>num(0|num(x.body).body?d.random(0|num(x.body).body):''+0|d.random()*2),
-  con:(x,y)=>x.type!='ls'?str(sform(x)+sform(y)):ls(x.body.concat(y.type!='ls'?y:y.body)),
-  cat:(x,y)=>x.type!='ls'?str(sform(x)+sform(y)):ls(x.body.concat(y)),
+  con:(x,y)=>x.type!='ls'?str(sform(x)+sform(y)):cm.flat(ls([x,y])),
   rev:x=>ls(x.body.map(a=>x.body.charAt?str(a):a).reverse()),
   rng:(x,y)=>([X,Y]=[+x.body,+y.body],ls(l.generate(a=>num(d.add(a,''+num(x.body).body))).take(Y-X))),
   str:x=>str(sform(x)),
@@ -305,8 +315,7 @@ cm={
   zip:(x,y)=>cm.map(I(app(fn('sS'),x)),cm.tsp(y)),
   flat:x=>ls(x.body.map(a=>x.body.charAt?str(a):a.type=='ls'?a.body:a).flatten()),
   obj:x=>obj(x.body.map(a=>[sform((A=a.body.get(0)).charAt?str(A):A),(B=a.body.get(1)).charAt?str(B):B]).toObject()),
-  obl:x=>cm.obj(cm.tsp(ls([cm.key(x),x]))),
-  pat:(x,y)=>I(app((X=cm.get(y,x)).body?X:cm.get(str('@'),x),y))
+  obl:x=>cm.obj(cm.tsp(ls([cm.key(x),x])))
 };
 
 [
@@ -343,7 +352,6 @@ cm={
   ['><','join'],
   ['<>','split'],
   ['++','con'],
-  ['+_','cat'],
   ['$$','eval'],
   ['%%','sleep'],
   ['<|>','chunk'],
@@ -412,7 +420,7 @@ I=x=>
   :x.map?
     (X=x.map(a=>I(a)))[X.length-1]
   :x.type=='ls'?
-    ls(x.body.map(I))
+    ls(x.body)
   :x.type=='obj'?
     obj(x.body)
   :x.type=='str'?
@@ -440,6 +448,8 @@ I=x=>
       I(ua(z,x.f).body)
     :z.type=='pt'?
       z.rev?cm[I(z).body](I(x.f),z.f):cm[I(z).body](z.f,I(x.f))
+    :z.type=='pm'?
+      I(app((X=z.body.find(a=>a[0]!='@'&&cm.eq(a[0],I(x.f)).body))?X[1]:z.body.find(a=>a[0]=='@')[1],I(x.f)))
     :z.type=='ls'||z.type=='obj'?
       cm.get(I(x.f),z)
     :z

@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=str/bin/get/oct/hex/num/bool/cond/ls/ev/obj/pm/var/aapp/app/def/arg/fn/a/ref
+type=str/bin/get/oct/hex/num/bool/cond/ls/ev/obj/pm/var/aapp/app/pm/def/arg/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -62,16 +62,10 @@ bool=a:[TF]{
 
 //list
 ls='['a:expr*']'?{
-  a=a.filter(x=>!x.big)
-  return a.reduce((x,y)=>({
-    type:'app',
-    body:{
-      type:'app',
-      body:{type:'fn',body:'cat'},
-      f:x
-    },
-    f:y
-  }),{type:'ls',body:[]})
+  return{
+    type:'ls',
+    body:a.filter(x=>!x.big)
+  }
 }
 //object
 obj='{'_*a:((num/fn/str)_*'\\'_*type _*';'?_*)*_*'}'?{
@@ -81,15 +75,12 @@ obj='{'_*a:((num/fn/str)_*'\\'_*type _*';'?_*)*_*'}'?{
     body:(a.map(x=>o[x[0].body]=x[4]),o)
   }
 }
-pm='.{'_*a:((num/fn/str)_*'\\'_*type _*';'?_*)*b:type? _*'}'?{
-  var o={}
+pm='.{'_*a:(type _*'\\'_*type _*';'?_*)*b:type? _*'}'?{
   return{
-    type:'app',
-    body:{type:'fn',body:'pat'},
-    f:{
-      type:'obj',
-      body:(a.map(x=>o[x[0].body]=x[4]),Object.assign(o,{'@':b||{type:'bool',body:0}}))
-    }
+    type:'pm',
+    body:(
+      a.map(x=>[x[0],x[4]]).concat([['@',b||{type:'bool',body:0}]])
+    )
   }
 }
 //expression list (holds multiple expressions)
@@ -103,7 +94,7 @@ a=a:('#'_*[0-9]+){
     body:+a[2].join``
   }
 }
-ref=a:('#'_*(fn/arg/ls/obj)){
+ref=a:('#'_*(fn/arg/ls/obj/pm)){
   return{
     type:'ref',
     body:a[2]
