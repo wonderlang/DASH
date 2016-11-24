@@ -168,7 +168,7 @@ cm={
   flr:x=>num(d.floor(''+num(x.body).body)),
   hypot:(x,y)=>num(d.hypot(''+num(x.body).body,''+num(y.body).body)),
   ln:x=>num(d.ln(''+num(x.body).body)),
-  lt:x=>num(d.log10(''+num(x.body).body)),
+  ltn:x=>num(d.log10(''+num(x.body).body)),
   log:(x,y)=>num(d.log(''+num(x.body).body,''+num(y.body).body)),
   max:x=>num(d.max(...x.body.map(a=>''+num(a.body).body).value())),
   min:x=>num(d.min(...x.body.map(a=>''+num(a.body).body).value())),
