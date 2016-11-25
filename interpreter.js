@@ -447,7 +447,11 @@ I=x=>
     :z.type=='pt'?
       z.rev?cm[I(z).body](I(x.f),z.f):cm[I(z).body](z.f,I(x.f))
     :z.type=='pm'?
-      I(app((X=z.body.find(a=>a[0]!='@'&&cm.eq(a[0],I(x.f)).body))?X[1]:z.body.find(a=>a[0]=='@')[1],I(x.f)))
+      I(app(
+        (X=z.body.find(a=>!a[0].type),Y=z.body.find(a=>a[0].type&&cm.eq(a[0],I(x.f)).body))?
+          Y[1]
+        :X[1],
+      I(x.f)))
     :z.type=='ls'||z.type=='obj'?
       cm.get(I(x.f),z)
     :z
