@@ -149,7 +149,7 @@ pkg=x=>{
   catch(e){
     error(`failed to read package "${x}"\n`,halt)
   }
-  return exec(parser.parse(f))
+  return I(parser.parse(f))
 },
 
 cm={
@@ -436,7 +436,7 @@ I=x=>
       vs[x.body]()
     :vs[x.body]
   :x.type=='app'?
-    (z=exec(x.body)).type=='fn'?
+    (z=I(x.body)).type=='fn'?
       cm[z.body]?
         cm[z.body].length>1?
           pt(z.body,I(x.f),z.rev)
@@ -453,11 +453,6 @@ I=x=>
     :z
   :x,
 
-exec=x=>tr(x).map(function(a){
-  if(a&&a.type=='def')this.block();
-  else if(a&&(a.type=='app'||a.type=='var'||a.type=='cond'||a.type=='ev'))return 1
-}).length?exec(I(x)):I(x)
-
 halt=1
 
 if(require.main!=module){
@@ -466,7 +461,7 @@ if(require.main!=module){
   try{
     const code=fs.readFileSync(F)+'',
     ps=parser.parse(code)
-    ps&&ps.length&&(fg.get('expr')?console.log('\n'+form(exec(ps))):exec(ps))
+    ps&&ps.length&&(fg.get('expr')?console.log('\n'+form(I(ps))):I(ps))
     console.log('')
   }catch(e){
     error(ERR(e),halt)
@@ -474,7 +469,7 @@ if(require.main!=module){
 }else if(E=fg.get('e')){
   try{
     ps=parser.parse(E)
-    ps&&ps.length&&(fg.get('expr')?console.log('\n'+form(exec(ps))):exec(ps))
+    ps&&ps.length&&(fg.get('expr')?console.log('\n'+form(I(ps))):I(ps))
     console.log('')
   }catch(e){
     error(ERR(e),halt)
@@ -503,7 +498,7 @@ if(require.main!=module){
     p=Prompt('wonder > ')
     Prompt.history.save()
     try{
-      console.log('\n'+form(exec(parser.parse(p))))
+      console.log('\n'+form(I(parser.parse(p))))
     }catch(e){
       error(ERR(e,halt))
     }
