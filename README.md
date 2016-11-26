@@ -27,15 +27,17 @@ For installation/docs, visit the [wiki](https://github.com/wonderlang/wonder/wik
 "Hello, world!"
 ```
 
-Fibonacci sequence (overflows really quickly):
+Recursive Fibonacci sequence with memoization:
 ```
-(while[
-  1
-  @[
-    S #0 1
-    oN + S #0 0 S #0 1
-  ]
-]) [oN 1; oN 1]
+f\ .{
+  0\ 0;
+  1\ 1;
+  @(
+    f\ set #[#0 x] f;
+    x
+  )x\ (+ f - #0 1) f - #0 2
+};
+map #f rng 1 50
 ```
 
 FizzBuzz:

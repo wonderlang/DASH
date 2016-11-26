@@ -157,7 +157,7 @@ cm={
   ol:x=>(process.stdout.write(sform(x)),x),
   oN:x=>(process.stdout.write(sform(x)+'\n'),x),
   wf:(x,y)=>(fs.writeFileSync(''+x.body,sform(y)),y),
-  rl:x=>(i=prompt('',0),i?str(i):tru(0)),
+  rl:x=>(str(prompt('',0))),
   rf:x=>str(fs.readFileSync(x.body+'')+''),
   E:x=>(d.config({precision:0|num(x.body).body}),x),
   abs:x=>num(d.abs(''+num(x.body).body)),
