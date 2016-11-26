@@ -149,7 +149,7 @@ cond='['_*a:type _*'?'_*b:expr*_*'?'_*c:expr*_*']'?{
 }
 
 //eval block
-ev='{'a:expr*'}'_*b:var{
+ev='`'a:expr*'`'_*b:var{
   return{
     type:'ev',
     body:a.filter(x=>!x.big),
