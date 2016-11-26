@@ -364,15 +364,9 @@ cm={
 ].map(a=>cm[a[0]]=cm[a[1]])
 //.map(x=>`\`${x[0]}\`|`+x[1]).join`\n`
 
-const vs={
-  pi:x=>num(d.acos(-1)),
-  e:x=>num(d.exp(1)),
-  phi:x=>num(d.div(d.add(1,d.sqrt(5)),2)),
-  ep:x=>num('.'+'0'.repeat(d.precision)+1),
-  cm:x=>ls(l(cm).map((a,b)=>fn(b)))
-},
+Pr=[]
 
-error=(e,f)=>{
+const error=(e,f)=>{
   console.log('\x1b[31mERROR:\x1b[0m '+e)
   f&&process.exit()
 },
@@ -456,6 +450,18 @@ I=x=>
       cm.get(I(x.f),z)
     :z
   :x,
+
+vs={
+  pi:x=>num(d.acos(-1)),
+  e:x=>num(d.exp(1)),
+  phi:x=>num(d.div(d.add(1,d.sqrt(5)),2)),
+  ep:x=>num('.'+'0'.repeat(d.precision)+1),
+  cm:x=>ls(l(cm).map((a,b)=>fn(b))),
+  N:ls(l.generate(x=>num(x),1/0)),
+  P:ls(l.generate(x=>x+2,1/0).filter(
+    x=>(X=l(Pr).filter(a=>a*a<=x).every(a=>x%a),X&&Pr.push(x),X)
+  ).map(num))
+},
 
 halt=1
 
