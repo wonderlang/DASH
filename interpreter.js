@@ -293,6 +293,7 @@ cm={
     ))
   ),
   iO:(x,y)=>ls(y.body.map((a,b)=>cm.eq(y.body.charAt?str(a):a,x).body?num(b):0).filter(a=>a)),
+  wv:(x,y)=>cm.flat(cm.tsp(ls([x,y]))),
   exit:x=>{process.exit()},
   sh:x=>str(Exec(''+x.body)+''),
   while:(x,y)=>([X,Y]=[x.body.get(0),x.body.get(1)],tru(I(app(X,y))).body?cm.while(x,I(app(Y,y))):y),
