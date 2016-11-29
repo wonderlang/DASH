@@ -65,6 +65,7 @@ str=x=>({
     .replace(/(?:([^#])#|^#)r/ig,'$1\r')
     .replace(/(?:([^#])#|^#)t/ig,'$1\t')
     .replace(/(?:([^#])#|^#)e/ig,'$1\x1b')
+    .replace(/(?:([^#])#|^#)a/ig,'$1\x07')
   )
 }),
 num=x=>({type:'num',body:l(isNaN(+x)?x.charAt?''+l(x).map(a=>a.codePointAt()).sum():''+len(ls(x)):(''+d(''+x)).replace(/_/g,'-').replace(/oo/g,'Infinity'))}),
