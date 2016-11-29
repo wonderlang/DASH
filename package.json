@@ -1,6 +1,6 @@
 {
   "name": "wonderlang",
-  "version": "1.9.2",
+  "version": "1.10.0",
   "preferGlobal": true,
   "description": "Easy, functional, lazy.",
   "main": "interpreter.js",
