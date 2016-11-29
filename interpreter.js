@@ -85,7 +85,7 @@ form=x=>
   :x.type=='fn'?
     `\x1b[34m${x.body}\x1b[0m`
   :x.type=='str'?
-    `\x1b[32m"${(''+x.body).replace(/"/g,'\\"').replace(XRE('\\p{C}'),a=>`#u{${a.charCodeAt().toString(16)}}`)}"\x1b[0m`
+    `\x1b[32m"${(''+x.body).replace(/"/g,'\\"').replace(XRE('\\p{C}','g'),a=>`#u{${a.charCodeAt().toString(16)}}`)}"\x1b[0m`
   :x.type=='bool'?
     `\x1b[36m${x.body?'T':'F'}\x1b[0m`
   :x.type=='ls'?
