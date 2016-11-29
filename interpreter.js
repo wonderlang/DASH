@@ -241,13 +241,27 @@ cm={
     :y.type=='obj'?
       (X={},X[x.body.get(0).body]=x.body.get(1),obj(y.body.assign(X)))
     :ls(y.body.map(a=>y.type=='str'?str(a):a).map((a,b)=>b==''+d.mod(''+x.body.get(0).body,len(y))?x.body.get(1):a)),
+  iset:(x,y)=>
+    y.type=='pm'?
+      pm(y.body.concat([[x.body.get(0),x.body.get(1)]]))
+    :y.type=='obj'?
+      (X={},X[x.body.get(0).body]=x.body.get(1),obj(y.body.assign(X)))
+    :ls(y.body.map(a=>y.type=='str'?str(a):a).map((a,b)=>b==''+x.body.get(0).body?x.body.get(1):a)),
   ins:(x,y)=>
     y.type=='obj'||y.type=='pm'?
       cm.set(x,y)
     :(
       Y=y.body.map(a=>y.type=='str'?str(a):a),
-      ls(Y.first(d.mod(''+x.body.get(0).body,len(y))).concat(x.body.get(1),
+      ls(Y.take(d.mod(0|x.body.get(0).body,len(y))).concat(x.body.get(1),
       Y.last(len(y)-d.mod(''+x.body.get(0).body,len(y)))))
+    ),
+  iins:(x,y)=>
+    y.type=='obj'||y.type=='pm'?
+      cm.set(x,y)
+    :(
+      Y=y.body.map(a=>y.type=='str'?str(a):a),
+      ls(Y.take(0|x.body.get(0).body).concat(x.body.get(1),
+      Y.drop(0|x.body.get(0).body)))
     ),
   join:(x,y)=>str(y.body.map(sform).join(sform(x))),
   split:(x,y)=>ls(XRE.split(''+y.body,rgx(x)).map(str)),
@@ -268,8 +282,8 @@ cm={
   sort:(x,y)=>ls(y.body.sortBy(a=>num(I(app(x,y.body.charAt?str(a):a)).body).body)),
   shuf:x=>ls((x.body.charAt?x.body.map(str):x.body).shuffle()),
   type:x=>str(x.type),
-  sum:x=>num(x.body.reduce((a,b)=>d.add(a,''+num(b.body).body),0)),
-  prod:x=>num(x.body.reduce((a,b)=>d.mul(a,''+num(b.body).body),1)),
+  sum:x=>num(x.body.map(a=>x.body.charAt?str(a):a).reduce((a,b)=>d.add(a,''+num(b.body).body),0)),
+  prod:x=>num(x.body.map(a=>x.body.charAt?str(a):a).reduce((a,b)=>d.mul(a,''+num(b.body).body),1)),
   chunk:(x,y)=>ls(y.body.charAt?y.body.chunk(0|num(x.body).body).map(a=>str(a.join``)):y.body.chunk(0|num(x.body).body).map(ls)),
   K:(x,y)=>x,
   I:x=>x,
@@ -367,7 +381,9 @@ cm={
   [':','get'],
   [':^','iget'],
   [':=','set'],
+  [':=^','iset'],
   [':+','ins'],
+  [':+^','iins'],
   ['><','join'],
   ['<>','split'],
   ['++','con'],
