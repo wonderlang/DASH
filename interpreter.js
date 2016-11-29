@@ -56,7 +56,15 @@ tru=x=>(
 
 O=x=>(console.log(x),x),
 
-str=x=>({type:'str',body:l(x)}),
+str=x=>({
+  type:'str',
+  body:l((x+'')
+    .replace(/(?:[^#]#|^#)u([\da-f]{4})/ig,(a,b)=>String.fromCodePoint(`0x${b}`))
+    .replace(/(?:[^#]#|^#)u{([\da-f]{0,6})}?/ig,(a,b)=>String.fromCodePoint(`0x${b}`))
+    .replace(/(?:[^#]#|^#)n/ig,'\n')
+    .replace(/(?:[^#]#|^#)r/ig,'\r')
+  )
+}),
 num=x=>({type:'num',body:l(isNaN(+x)?x.charAt?''+l(x).map(a=>a.codePointAt()).sum():''+len(ls(x)):(''+d(''+x)).replace(/_/g,'-').replace(/oo/g,'Infinity'))}),
 ls=x=>({type:'ls',body:l(x).map(I)}),
 obj=x=>({type:'obj',body:l(x)})
@@ -121,7 +129,7 @@ sform=x=>
   :x.type=='bool'?
     x.body?'T':'F'
   :x.type=='ls'?
-    `[ls ${len(x)}]`
+    `[ls]`
   :x.type=='obj'?
     `{obj ${x.body.keys().size()}}`
   :x.type=='def'?
