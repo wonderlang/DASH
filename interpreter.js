@@ -59,10 +59,12 @@ O=x=>(console.log(x),x),
 str=x=>({
   type:'str',
   body:l((x+'')
-    .replace(/(?:[^#]#|^#)u([\da-f]{4})/ig,(a,b)=>String.fromCodePoint(`0x${b}`))
-    .replace(/(?:[^#]#|^#)u{([\da-f]{0,6})}?/ig,(a,b)=>String.fromCodePoint(`0x${b}`))
-    .replace(/(?:[^#]#|^#)n/ig,'\n')
-    .replace(/(?:[^#]#|^#)r/ig,'\r')
+    .replace(/(?:([^#])#|^#)u([\da-f]{4})/ig,(a,b,c)=>(b||'')+String.fromCodePoint(`0x${c}`))
+    .replace(/(?:([^#])#|^#)u{([\da-f]{0,6})}?/ig,(a,b,c)=>(b||'')+String.fromCodePoint(`0x${c}`))
+    .replace(/(?:([^#])#|^#)n/ig,'$1\n')
+    .replace(/(?:([^#])#|^#)r/ig,'$1\r')
+    .replace(/(?:([^#])#|^#)t/ig,'$1\t')
+    .replace(/(?:([^#])#|^#)e/ig,'$1\x1b')
   )
 }),
 num=x=>({type:'num',body:l(isNaN(+x)?x.charAt?''+l(x).map(a=>a.codePointAt()).sum():''+len(ls(x)):(''+d(''+x)).replace(/_/g,'-').replace(/oo/g,'Infinity'))}),
@@ -83,7 +85,7 @@ form=x=>
   :x.type=='fn'?
     `\x1b[34m${x.body}\x1b[0m`
   :x.type=='str'?
-    `\x1b[32m"${(''+x.body).replace(/"/g,'\\"').replace(/\x1b\[.+?m/g,'')}"\x1b[0m`
+    `\x1b[32m"${(''+x.body).replace(/"/g,'\\"').replace(XRE('\\p{C}'),a=>`#u{${a.charCodeAt().toString(16)}}`)}"\x1b[0m`
   :x.type=='bool'?
     `\x1b[36m${x.body?'T':'F'}\x1b[0m`
   :x.type=='ls'?
