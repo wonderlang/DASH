@@ -227,8 +227,13 @@ cm={
   len:x=>num(len(x)),
   get:(x,y)=>I((
     y.type=='obj'?
-      l(y.body).get(''+x.body)
+      y.body.get(''+x.body)
     :y.body.map(a=>a.charAt?str(a):a).get(0|d.mod(0|num(x.body).body,len(y)))
+  )||tru(0)),
+  iget:(x,y)=>I((
+    y.type=='obj'?
+      y.body.get(''+x.body)
+    :y.body.map(a=>a.charAt?str(a):a).get(0|num(x.body).body)
   )||tru(0)),
   set:(x,y)=>
     y.type=='pm'?
@@ -360,6 +365,7 @@ cm={
   ['*>','every'],
   ['/>','some'],
   [':','get'],
+  [':^','iget'],
   [':=','set'],
   [':+','ins'],
   ['><','join'],
