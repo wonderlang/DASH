@@ -308,7 +308,7 @@ cm={
   tk:(x,y)=>ls(y.body.take(0|num(x.body).body).map(a=>a.charAt?str(a):a)),
   dp:(x,y)=>ls(y.body.drop(0|num(x.body).body).map(a=>a.charAt?str(a):a)),
   gen:x=>ls(l.generate(a=>app(x,num(a)),1/0)),
-  genc:(x,y)=>ls(l.generate(a=>y=a?app(x,y):y,1/0)),
+  genc:(x,y)=>ls(l.generate(a=>y=a?app(app(x,num(a)),y):y,1/0)),
   rpt:x=>ls(l.repeat(x,1/0)),
   inx:(x,y)=>(
     [X,Y]=[x.body.map(a=>x.body.charAt?str(a):a),y.body.map(a=>y.body.charAt?str(a):a)],
