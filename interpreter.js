@@ -115,7 +115,7 @@ form=x=>
   :x.type=='cond'?
     `[${form(x.body)}?${form(x.f)}?${form(x.g)}]`
   :x.type=='rgx'?
-    `\x1b[37mR"${x.body.source}""${x.body.flags}"\x1b[0m`
+    `\x1b[37m\`${x.body.source}\`${x.body.flags}\x1b[0m`
   :x.type=='ev'?
     `{${x.body.map(form).join`;`}}${form(x.f)}\\${form(x.g)}`
   :x.type=='pm'?
@@ -147,11 +147,11 @@ sform=x=>
   :x.type=='cond'?
     '[cond]'
   :x.type=='rgx'?
-    '[rgx]'
+    '`rgx`'
   :x.type=='ev'?
     `{ev ${sform(x.f)} ${sform(x.g)}}`
   :x.type=='pm'?
-    `.{pm}`
+    `{pm}`
   :error('failed to format JSON\n'+JSON.stringify(x),halt),
 
 pkg=x=>{

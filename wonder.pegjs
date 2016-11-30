@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=str/bin/get/oct/hex/num/bool/cond/ls/ev/obj/pm/var/aapp/app/pm/def/arg/fn/a/ref
+type=str/rgx/bin/get/oct/hex/num/bool/cond/ls/ev/obj/pm/var/aapp/app/pm/def/arg/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -20,6 +20,23 @@ str='"'a:([^"\\]/'\\'.)*'"'?{
   return{
     type:'str',
     body:a.map(x=>x.pop?x[1]=='"'?'"':x.join``:x).join``.replace(/\\\\/g,'\\')
+  }
+}
+rgx='`'a:([^`\\]/'\\'.)*'`'?b:[a-zA-Z]*{
+  return{
+    type:'app',
+    body:{
+      type:'app',
+      body:{type:'fn',body:'R'},
+      f:{
+        type:'str',
+        body:a.map(x=>x.pop?x[1]=='"'?'"':x.join``:x).join``.replace(/\\\\/g,'\\')
+      }
+    },
+    f:{
+      type:'str',
+      body:b.join``
+    }
   }
 }
 //numbers
