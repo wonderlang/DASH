@@ -496,7 +496,7 @@ vs={
   P:ls(l.generate(x=>x+2,1/0).filter(
     x=>(X=l(Pr).filter(a=>a*a<=x).every(a=>x%a),X&&Pr.push(x),X)
   ).map(num))
-},
+}
 
 halt=1
 
