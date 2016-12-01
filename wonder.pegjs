@@ -140,7 +140,7 @@ aapp=a:(app/arg)_*b:type{
     f:b
   }
 }
-comp=a:(fn/def/arg/ls/obj/pm)_*b:('.'_*(fn/def/arg/ls/obj/pm))+{
+comp=a:(fn/def/arg/ls/obj/pm/ref)_*b:('.'_*(fn/def/arg/ls/obj/pm/ref))+{
   return{
     type:'app',
     body:{type:'fn',body:'ss'},
