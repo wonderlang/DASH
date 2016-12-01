@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=str/rgx/bin/get/oct/hex/num/bool/cond/ls/ev/obj/pm/var/aapp/app/pm/def/arg/fn/a/ref
+type=str/rgx/bin/get/oct/hex/num/bool/cond/ls/ev/obj/pm/var/aapp/app/comp/pm/def/arg/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -126,20 +126,31 @@ fn=a:[^ \n;0-9".[\]\\(){}@#TF?`]+{
   }
 }
 //function application
-app=a:(fn/def)_* b:type{
+app=a:(fn/def)_*b:type{
   return{
     type:'app',
     body:a.pop?a[1]:a,
     f:b
   }
 }
-aapp=a:(app/arg) _*b:type{
+aapp=a:(app/arg)_*b:type{
   return{
     type:'app',
     body:a,
     f:b
   }
 }
+comp=a:(fn/def/arg/ls/obj/pm)_*b:('.'_*(fn/def/arg/ls/obj/pm))+{
+  return{
+    type:'app',
+    body:{type:'fn',body:'ss'},
+    f:{
+      type:'ls',
+      body:[a,...b.map(x=>x[2])]
+    }
+  }
+}
+
 //function definition
 def='@'_*b:type{
   return{
@@ -176,7 +187,7 @@ ev=a:arg _*b:var{
 }
 
 //get
-get=a:(ls/obj/pm)b:type{
+get=a:(ls/obj/pm/comp)_*b:type{
   return{
     type:'app',
     body:a,

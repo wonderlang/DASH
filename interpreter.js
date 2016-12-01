@@ -214,7 +214,7 @@ cm={
   lt:(x,y)=>tru(+d(''+num(x.body).body).cmp(''+num(y.body).body)==-1),
   lteq:(x,y)=>tru(+d(''+num(x.body).body).lte(''+num(y.body).body)),
   gteq:(x,y)=>tru(+d(''+num(x.body).body).gte(''+num(y.body).body)),
-  neg:x=>num('-'+num(x.body).body),
+  neg:x=>num(d(num(x.body).body+'').neg()),
   map:(x,y)=>ls(y.body.map(a=>I(app(x,y.body.charAt?str(a):a)))),
   fold:(x,y)=>y.body.reduce((a,b)=>I(app(app(x.body.get(0),b),y.body.charAt?str(a):a)),x.body.get(1)),
   foldr:(x,y)=>y.body.reduceRight((a,b)=>I(app(app(x.body.get(0),b),y.body.charAt?str(a):a)),x.body.get(1)),
