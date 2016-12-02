@@ -226,7 +226,9 @@ cm={
   some:(x,y)=>tru(y.body.some(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   len:x=>num(len(x)),
   get:(x,y)=>I((
-    y.type=='obj'?
+    y.type=='pm'?
+      app(y,x)
+    :y.type=='obj'?
       y.body.get(''+x.body)
     :y.body.map(a=>a.charAt?str(a):a).get(0|d.mod(0|num(x.body).body,len(y)))
   )||tru(0)),
