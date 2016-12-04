@@ -485,6 +485,8 @@ I=x=>
       I(x.f)))
     :z.type=='ls'||z.type=='obj'?
       cm.get(I(x.f),z)
+    :z.type=='rgx'?
+      cm.mstr(z,I(x.f))
     :z
   :x,
 
