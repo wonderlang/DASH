@@ -240,7 +240,7 @@ cm={
   set:(x,y)=>
     y.type=='pm'?
       pm(
-        y.body.some(a=>a[0]!='@'&&cm.eq(x.body.get(0),a[0]).body)?
+        y.body.find(a=>a[0]!='@'&&cm.eq(x.body.get(0),a[0]).body)?
           y.body.map(a=>a[0]!='@'&&cm.eq(x.body.get(0),a[0]).body?[x.body.get(0),x.body.get(1)]:a)
         :y.body.concat([[x.body.get(0),x.body.get(1)]])
       )
