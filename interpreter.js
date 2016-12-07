@@ -117,7 +117,7 @@ form=x=>
   :x.type=='rgx'?
     `\x1b[37m\`${x.body.source}\`${x.body.flags}\x1b[0m`
   :x.type=='ev'?
-    `{${x.body.map(form).join`;`}}${form(x.f)}\\${form(x.g)}`
+    `(${x.body.map(form).join`;`})${form(x.f)}\\${form(x.g)}`
   :x.type=='pm'?
     `.{${
       x.body.map(a=>a[0]!='@'&&form(a[0])+'\\'+form(a[1])).filter(a=>a).join`;`
@@ -149,7 +149,7 @@ sform=x=>
   :x.type=='rgx'?
     '`rgx`'
   :x.type=='ev'?
-    `{ev ${sform(x.f)} ${sform(x.g)}}`
+    `(ev ${sform(x.f)} ${sform(x.g)})`
   :x.type=='pm'?
     `{pm}`
   :error('failed to format JSON\n'+JSON.stringify(x),halt),
@@ -239,7 +239,11 @@ cm={
   )||tru(0)),
   set:(x,y)=>
     y.type=='pm'?
-      pm(y.body.concat([[x.body.get(0),x.body.get(1)]]))
+      pm(
+        y.body.some(a=>a[0]!='@'&&cm.eq(x.body.get(0),a[0]).body)?
+          y.body.map(a=>a[0]!='@'&&cm.eq(x.body.get(0),a[0]).body?[x.body.get(0),x.body.get(1)]:a)
+        :y.body.concat([[x.body.get(0),x.body.get(1)]])
+      )
     :y.type=='obj'?
       (X={},X[x.body.get(0).body]=x.body.get(1),obj(y.body.assign(X)))
     :ls(y.body.map(a=>y.type=='str'?str(a):a).map((a,b)=>b==''+d.mod(''+x.body.get(0).body,len(y))?x.body.get(1):a)),
