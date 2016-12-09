@@ -79,3 +79,4 @@ t\ @[
 ];
 t rl ()
 ```
+You can find some PPCG.SE Wonder submissions [here](http://codegolf.stackexchange.com/search?q=wonder+url%3A%22https%3A%2F%2Fgithub.com%2Fwonderlang%2Fwonder%22+is%3Aanswer).
