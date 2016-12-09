@@ -4,15 +4,17 @@
 
 [![NPM](https://nodei.co/npm-dl/wonderlang.png?months=6&height=3)](https://nodei.co/npm/wonderlang/)
 
-Are you a functional elitist? Are you a lazy coder? Do you just _love_ esolangs? If so, then Wonder is for you.
+Are you a functional programming elitist? Are you a lazy coder? Do you just wish there was a wonderful programming language? If so, then Wonder is for you.
 
 Wonder is a general-purpose functional programming language influenced by countless other programming languages, especially Haskell, Lisp, and Javascript. Although meant to be a practical language, Wonder can become quite obfuscated at times.
 
 For installation/docs, visit the [wiki](https://github.com/wonderlang/wonder/wiki).
 
 #Features
-- Mostly functional, with some side effects
+- Mostly functional, with some imperative/object-oriented structures
 - Lazily evaluated
+- Fresh syntax design
+- Dynamically and weakly typed
 - Implements a zero-indexed version of de Bruijn indices
 - Code as data
 - Pattern matching support
