@@ -373,7 +373,8 @@ cm={
   flat:x=>ls(x.body.map(a=>x.body.charAt?str(a):a.type=='ls'?a.body:a).flatten()),
   obj:x=>obj(x.body.map(a=>[sform((A=a.body.get(0)).charAt?str(A):A),(B=a.body.get(1)).charAt?str(B):B]).toObject()),
   obl:x=>cm.obj(cm.tsp(ls([cm.key(x),x]))),
-  tru:x=>tru(tru(x).body||x.type=='num')
+  tru:x=>tru(tru(x).body||x.type=='num'),
+  fac:x=>ls(_.range(1,Math.abs(X=0|num(x.body).body)/2|0).filter(a=>!(X%a)).map(a=>num(X<0?-a:a)).concat(num(X)))
 };
 
 [
