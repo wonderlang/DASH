@@ -233,6 +233,7 @@ cm={
   drwl:(x,y)=>ls(y.body.dropWhile(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   fltr:(x,y)=>ls(y.body.filter(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   find:(x,y)=>y.body.find(a=>tru(I(app(x,y.body.charAt?str(a):a))).body),
+  findi:(x,y)=>y.body.map((a,b)=>tru(I(app(x,y.body.charAt?str(a):a))).body?num(b):0).find(a=>a)||bool(0),
   every:(x,y)=>tru(y.body.every(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   some:(x,y)=>tru(y.body.some(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   len:x=>num(len(x)),
@@ -310,7 +311,7 @@ cm={
   not:x=>tru(+!tru(x).body),
   mstr:(x,y)=>obj(l(Object.assign({},XRE.match(''+y.body,rgx(x))||[])).map((a,b)=>[b,str(a)]).toObject()),
   xstr:(x,y)=>obj(l(Object.assign({},XRE.exec(''+y.body,rgx(x))||[])).map((a,b)=>[b,(a.toFixed?num:str)(a)]).toObject()),
-  sstr:(x,y)=>num((XRE.exec(''+y.body,rgx(x))||[]).index||-1),
+  sstr:(x,y)=>num((XRE.exec(''+y.body,rgx(x))||[]).index||bool(0)),
   rstr:(x,y)=>str(
     XRE.replace(
       y.body+'',
@@ -347,7 +348,7 @@ cm={
     ))
   ),
   iO:(x,y)=>ls(y.body.map((a,b)=>cm.eq(y.body.charAt?str(a):a,x).body?num(b):0).filter(a=>a)),
-  fiO:(x,y)=>y.body.map((a,b)=>cm.eq(y.body.charAt?str(a):a,x).body?num(b):0).find(a=>a),
+  fiO:(x,y)=>y.body.map((a,b)=>cm.eq(y.body.charAt?str(a):a,x).body?num(b):0).find(a=>a)||bool(0),
   exit:x=>{process.exit()},
   sh:x=>str(Exec(''+x.body)+''),
   while:(x,y)=>([X,Y]=[x.body.get(0),x.body.get(1)],tru(I(app(X,y))).body?cm.while(x,I(app(Y,y))):y),
@@ -371,7 +372,8 @@ cm={
   zip:(x,y)=>cm.map(I(app(fn('sS'),x)),cm.tsp(y)),
   flat:x=>ls(x.body.map(a=>x.body.charAt?str(a):a.type=='ls'?a.body:a).flatten()),
   obj:x=>obj(x.body.map(a=>[sform((A=a.body.get(0)).charAt?str(A):A),(B=a.body.get(1)).charAt?str(B):B]).toObject()),
-  obl:x=>cm.obj(cm.tsp(ls([cm.key(x),x])))
+  obl:x=>cm.obj(cm.tsp(ls([cm.key(x),x]))),
+  tru:x=>tru(tru(x).body||x.type=='num')
 };
 
 [
