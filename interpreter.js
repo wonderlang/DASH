@@ -25,6 +25,17 @@ fg.defineString('e')
 fg.defineNumber('tk',1e3)
 fg.parse()
 
+XRE.addToken(
+  /\\e/,
+  x=>'\\x1b',
+  {scope:'all'}
+)
+XRE.addToken(
+  /\\a/,
+  x=>'\\x07',
+  {scope:'all'}
+)
+
 const lex=fs.readFileSync(__dirname+'/wonder.pegjs')+'',
 parser=peg.generate(lex),
 
@@ -309,6 +320,10 @@ cm={
       :(a,...b)=>sform(I(app(x.body.get(1),I([str(a)].concat(b.slice(0,-2).map(i=>str(i||'')))))))
     )
   ),
+  Rstr:(x,y)=>
+    tru(cm.mstr(x.body.get(0),y)).body?
+      cm.Rstr(x,cm.rstr(x,y))
+    :y,
   R:(x,y)=>({type:'rgx',body:XRE(''+x.body,''+y.body)}),
   var:(x,y)=>vs[x.body]?vs[x.body]:(vs[x.body]=y),
   tk:(x,y)=>ls(y.body.take(0|num(x.body).body).map(a=>a.charAt?str(a):a)),
