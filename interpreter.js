@@ -324,6 +324,8 @@ cm={
     tru(cm.mstr(x.body.get(0),y)).body?
       cm.Rstr(x,cm.rstr(x,y))
     :y,
+  gstr:(x,y)=>ls(y.body.split('\n').filter(a=>XRE.match(a,rgx(x))).map(str)),
+  Gstr:(x,y)=>ls(y.body.split('\n').reject(a=>XRE.match(a,rgx(x))).map(str)),
   R:(x,y)=>({type:'rgx',body:XRE(''+x.body,''+y.body)}),
   var:(x,y)=>vs[x.body]?vs[x.body]:(vs[x.body]=y),
   tk:(x,y)=>ls(y.body.take(0|num(x.body).body).map(a=>a.charAt?str(a):a)),
