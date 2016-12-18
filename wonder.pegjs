@@ -140,7 +140,7 @@ aapp=a:(app/arg)_*b:type{
     f:b
   }
 }
-uapp='?'a:fn _*b:type{
+uapp="'"a:fn _*b:type{
   return{
     type:'app',
     body:a,
