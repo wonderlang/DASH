@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=get/str/rgx/bin/oct/hex/num/bool/cond/ls/ev/obj/pm/var/aapp/app/comp/pm/def/arg/fn/a/ref
+type=get/str/rgx/bin/oct/hex/num/bool/cond/ls/ev/obj/pm/var/comp/uapp/aapp/app/pm/def/arg/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -140,7 +140,14 @@ aapp=a:(app/arg)_*b:type{
     f:b
   }
 }
-comp=a:(fn/def/arg/ls/obj/pm/ref/rgx)_*b:('.'_*(fn/def/arg/ls/obj/pm/ref/rgx))+{
+uapp='?'a:fn _*b:type{
+  return{
+    type:'app',
+    body:a,
+    f:b
+  }
+}
+comp=a:(fn/def/arg/ls/obj/pm/ref/rgx/uapp)_*b:('.'_*(fn/def/arg/ls/obj/pm/ref/rgx/uapp))+{
   return{
     type:'app',
     body:{type:'fn',body:'ss'},
