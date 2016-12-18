@@ -40,32 +40,32 @@ rgx='`'a:([^`\\]/'\\'.)*'`'?b:[a-zA-Z]*{
   }
 }
 //numbers
-num=a:([0-9]+('.'[0-9]+)?('e''_'?[0-9]+)?/'.'[0-9]+('e''_'?[0-9]+)?/'oo'){
+num=a:$('_'?[0-9]+('.'[0-9]+)?('e''_'?[0-9]+)?/'_'?'.'[0-9]+('e''_'?[0-9]+)?/'_'?'oo'){
   var f
   return{
     type:'num',
-    body:a!='oo'?(f=z=>z.map(x=>x&&x.pop?f(x):x).join``.replace(/_/g,'-'))(a):'Infinity'
+    body:a!='oo'?a.replace(/_/g,'-'):a!='_oo'?'Infinity':'-Infinity'
   }
 }
-bin=a:('0b'([01]+('.'[01]+)?/'.'[0-9]+)){
+bin=a:$('_'?'0b'([01]+('.'[01]+)?/'.'[01]+)){
   var f
   return{
     type:'num',
-    body:(f=z=>z.map(x=>x&&x.pop?f(x):x).join``.replace(/_/g,'-'))(a)
+    body:a.replace(/_/g,'-')
   }
 }
-oct=a:('0o'([0-8]+('.'[0-8]+)?/'.'[0-8]+)){
+oct=a:$('_'?'0o'([0-8]+('.'[0-8]+)?/'.'[0-8]+)){
   var f
   return{
     type:'num',
-    body:(f=z=>z.map(x=>x&&x.pop?f(x):x).join``.replace(/_/g,'-'))(a)
+    body:a.replace(/_/g,'-')
   }
 }
-hex=a:('0x'([0-9A-Fa-f]+('.'[0-9A-Fa-f]+)?/'.'[0-9A-Fa-f]+)){
+hex=a:$('_'?'0x'([0-9A-Fa-f]+('.'[0-9A-Fa-f]+)?/'.'[0-9A-Fa-f]+)){
   var f
   return{
     type:'num',
-    body:(f=z=>z.map(x=>x&&x.pop?f(x):x).join``.replace(/_/g,'-'))(a)
+    body:a.replace(/_/g,'-')
   }
 }
 
