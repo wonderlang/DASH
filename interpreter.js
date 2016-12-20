@@ -215,7 +215,7 @@ cm={
   tan:x=>num(d.tan(''+num(x.body).body)),
   tanh:x=>num(d.tanh(''+num(x.body).body)),
   trunc:x=>num(d.trunc(''+num(x.body).body)),
-  cmp:(x,y)=>tru(d(''+num(x.body).body).cmp(''+num(y.body).body)),
+  cmp:(x,y)=>num(d(''+num(x.body).body).cmp(''+num(y.body).body)),
   eq:(x,y)=>tru(
     form(x.type=='obj'?obj(x.body.sort().toObject()):x)==form(y.type=='obj'?obj(y.body.sort().toObject()):y)
     ||(x.body.charAt&&y.body.charAt&&''+num(x.body).body==''+num(y.body).body)
