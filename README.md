@@ -42,6 +42,13 @@ f\ .{
 map #f rng 1 50
 ```
 
+Alternative Fibonacci sequence:
+```
+tk 100 (genc@
+  round * #phi #0
+) 1
+```
+
 FizzBuzz:
 ```
 (join "
