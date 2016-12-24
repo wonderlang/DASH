@@ -288,7 +288,12 @@ cm={
   bool:tru,
   num:x=>num(x.body),
   rnd:x=>num(0|num(x.body).body?d.random(0|num(x.body).body):''+0|d.random()*2),
-  con:(x,y)=>x.type!='ls'?str(sform(x)+sform(y)):cm.flat(ls([x,y])),
+  con:(x,y)=>
+    x.type!='ls'?
+      x.type!='obj'?
+        str(sform(x)+sform(y))
+      :obj(Object.assign(x.body.value(),y.body.map(a=>y.body.charAt?str(a):a).value()))
+    :cm.flat(ls([x,y])),
   rev:x=>ls(x.body.map(a=>x.body.charAt?str(a):a).reverse()),
   rng:(x,y)=>([X,Y]=[+x.body,+y.body],ls(l.generate(a=>num(d.add(a,''+num(x.body).body))).take(Y-X))),
   str:x=>str(sform(x)),
