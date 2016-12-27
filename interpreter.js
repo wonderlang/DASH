@@ -1,5 +1,11 @@
 #!/usr/bin/env node
 
+//First off, I apologize if the code appears gnarly. My coding style is... interesting.
+//I have done my best to make it somewhat more readable. Hope this works for you;
+//if not, then just open a Github issue about it.
+//TIP: Having a comprehensive syntax highlighter will help a LOT.
+
+//Dependencies
 const fs=require('fs'),
 fg=require('flags'),
 peg=require('pegjs'),
@@ -13,18 +19,23 @@ prompt=require('prompt-sync')({sigint:true}),
 Exec=require('child_process').execSync,
 key=require('keypress'),
 XRE=require('xregexp')
+
+//This defines default number behavior
 d.config({
   toExpNeg:-9e15,
   toExpPos:9e15,
   crypto:true,
   modulo:d.EUCLID
 })
+
+//Parsing command line flags
 fg.defineBoolean('expr',true)
 fg.defineString('f')
 fg.defineString('e')
 fg.defineNumber('tk',1e3)
 fg.parse()
 
+//Custom tokens
 XRE.addToken(
   /\\e/,
   x=>'\\x1b',
@@ -36,19 +47,22 @@ XRE.addToken(
   {scope:'all'}
 )
 
+//Lexer/parser
 const lex=fs.readFileSync(__dirname+'/wonder.pegjs')+'',
 parser=peg.generate(lex),
 
-lng=(x,y=0)=>x.drop(Number.MAX_SAFE_INTEGER).first()!=[]._?1/0:l(x).first()!=[]._?lng(l(x).rest(),y+1)+1:0,
+//Length function
+//TODO: figure out how to make this work on ALL infinite lists
 len=x=>{
   try{
     return x.body.length()
   }
   catch(e){
-    return lng(x.body)
+    return x.body.size()
   }
 },
 
+//Boolean type conversion
 tru=x=>(
   {
     type:'bool',
@@ -65,13 +79,20 @@ tru=x=>(
   }
 ),
 
+//Just a console.log wrapper for debugging
 O=x=>(console.log(x),x),
 
 str=x=>({
   type:'str',
   body:l((x+'')
-    .replace(/(?:([^#])#|^#)u([\da-f]{4})/ig,(a,b,c)=>(b||'')+String.fromCodePoint(`0x${c}`))
-    .replace(/(?:([^#])#|^#)u{([\da-f]{0,6})}?/ig,(a,b,c)=>(b||'')+String.fromCodePoint(`0x${c}`))
+    .replace(
+      /(?:([^#])#|^#)u([\da-f]{4})/ig,
+      (a,b,c)=>(b||'')+String.fromCodePoint(`0x${c}`)
+    )
+    .replace(
+      /(?:([^#])#|^#)u{([\da-f]{0,6})}?/ig,
+      (a,b,c)=>(b||'')+String.fromCodePoint(`0x${c}`)
+    )
     .replace(/(?:([^#])#|^#)n/ig,'$1\n')
     .replace(/(?:([^#])#|^#)r/ig,'$1\r')
     .replace(/(?:([^#])#|^#)t/ig,'$1\t')
@@ -80,9 +101,24 @@ str=x=>({
     .replace(/(?:([^#])#|^#)a/ig,'$1\x07')
   )
 }),
-num=x=>({type:'num',body:l(isNaN(+x)?x.charAt?''+l(x).map(a=>a.codePointAt()).sum():''+len(ls(x)):(''+d(''+x)).replace(/_/g,'-').replace(/oo/g,'Infinity'))}),
+
+//Utility functions for wrapping raw data in types and converting
+//These follow the parser's convention of type wrapping
+//All types contain a type header, a body, and possibly f and g properties.
+num=x=>({
+  type:'num',
+  body:
+    l(
+      isNaN(+x)?
+        x.charAt?
+          ''+l(x).map(a=>a.codePointAt()).sum()
+        :''+len(ls(x))
+      :(''+d(''+x))
+        .replace(/_/g,'-')
+        .replace(/oo/g,'Infinity'))
+}),
 ls=x=>({type:'ls',body:l(x).map(I)}),
-obj=x=>({type:'obj',body:l(x)})
+obj=x=>({type:'obj',body:l(x)}),
 vr=(x,y)=>({type:'var',body:x,f:y}),
 app=(x,y)=>({type:'app',body:x,f:y}),
 pt=(x,y,z)=>({type:'pt',body:x,f:y,rev:z})
@@ -92,13 +128,23 @@ a=x=>({type:'a',body:0|x}),
 rgx=x=>x.type=='rgx'?x.body:XRE(x.body),
 pm=x=>({type:'pm',body:x}),
 
+//Source formatting function, with syntax highlighting
+//Should be updated to account for all types/changes to type behaviors
 form=x=>
   x.type=='num'?
-    `\x1b[33m${(''+x.body).replace(/Infinity/g,'oo').replace(/-/g,'_')}\x1b[0m`
+    `\x1b[33m${
+      (''+x.body)
+        .replace(/Infinity/g,'oo')
+        .replace(/-/g,'_')
+    }\x1b[0m`
   :x.type=='fn'?
     `\x1b[34m${x.body}\x1b[0m`
   :x.type=='str'?
-    `\x1b[32m"${(''+x.body).replace(/"/g,'\\"').replace(XRE('(?=\\S|\r)\\pC','g'),a=>`#u{${a.charCodeAt().toString(16)}}`)}"\x1b[0m`
+    `\x1b[32m"${
+      (''+x.body)
+        .replace(/"/g,'\\"')
+        .replace(XRE('(?=\\S|\r)\\pC','g'),a=>`#u{${a.charCodeAt().toString(16)}}`)
+    }"\x1b[0m`
   :x.type=='bool'?
     `\x1b[36m${x.body?'T':'F'}\x1b[0m`
   :x.type=='ls'?
@@ -134,6 +180,8 @@ form=x=>
       x.body.map(a=>a[0]!='@'&&form(a[0])+'\\'+form(a[1])).filter(a=>a).join`;`
     };${form(x.body.find(a=>a[0]=='@')[1])}}`
   :error('failed to format JSON\n'+JSON.stringify(x),halt),
+
+//String formatting function
 sform=x=>
   x.type=='num'?
     (''+x.body).replace(/Infinity/g,'oo').replace(/-/g,'_')
@@ -165,6 +213,7 @@ sform=x=>
     `{pm}`
   :error('failed to format JSON\n'+JSON.stringify(x),halt),
 
+//Package reading function, reads directly from the dpm folder in the CWD.
 pkg=x=>{
   try{
     f=fs.readFileSync((`dpm/${x}/`+fs.readFileSync(`dpm/${x}/pkg`)).replace(/\s/g,''))+''
@@ -175,47 +224,98 @@ pkg=x=>{
   return I(parser.parse(f))
 },
 
+//STDLIB is called cm
+//This will be one helluva challenge to read, I'm sure. Sorry!
+//All cm functions are either unary or binary; no more, no less.
+//Note that almost all of these functions work with the properties of the types.
+//If you want to add other functions, be sure to at least *try* to notice some
+//of the structures that I use (esp. for type checking/conversion).
+//More info can be found on the Github wiki's page on cm functions.
 cm={
+  //input
+  rl:x=>str(prompt('',0)),
+  rf:x=>str(fs.readFileSync(x.body+'')+''),
+
+  //output
+  //Using the form and sform functions are important here
   os:x=>(process.stdout.write(form(x).replace(/\x1b\[\d+m/g,'')),x),
   ol:x=>(process.stdout.write(sform(x)),x),
   oN:x=>(process.stdout.write(sform(x)+'\n'),x),
   wf:(x,y)=>(fs.writeFileSync(''+x.body,sform(y)),y),
-  rl:x=>str(prompt('',0)),
-  rf:x=>str(fs.readFileSync(x.body+'')+''),
+
+  //num
+  //Use num(x.body).body for converting to number
+  num:x=>num(x.body),
+  //charcode
+  tc:x=>ls(x.body.map(a=>num(a.codePointAt()))),
+  fc:x=>str(
+    x.type=='ls'?
+      x.body.map(a=>cm.fc(I(a)).body).join('')
+    :String.fromCodePoint(0|num(x.body).body)
+  ),
+  //base
+  hx:x=>str(d(''+num(x.body).body).toHexadecimal()),
+  bn:x=>str(d(''+num(x.body).body).toBinary()),
+  ot:x=>str(d(''+num(x.body).body).toOctal()),
+  //precision and rounding
   E:x=>(d.config({precision:0|num(x.body).body}),x),
+  rnd:x=>num(0|num(x.body).body?d.random(0|num(x.body).body):''+0|d.random()*2),
+  flr:x=>num(d.floor(''+num(x.body).body)),
+  trunc:x=>num(d.trunc(''+num(x.body).body)),
+  round:x=>num(d.round(''+num(x.body).body)),
+  ceil:x=>num(d.ceil(''+num(x.body).body)),
+  //sign
+  sign:x=>num(d.sign(''+num(x.body).body)),
   abs:x=>num(d.abs(''+num(x.body).body)),
-  acos:x=>num(d.acos(''+num(x.body).body)),
-  acosh:x=>num(d.acosh(''+num(x.body).body)),
+  neg:x=>num(d(num(x.body).body+'').neg()),
+  //number comparison
+  cmp:(x,y)=>num(d(''+num(x.body).body).cmp(''+num(y.body).body)),
+  max:x=>num(d.max(...x.body.map(a=>''+num(a.body).body).value())),
+  min:x=>num(d.min(...x.body.map(a=>''+num(a.body).body).value())),
+  //arithmetic
   add:(x,y)=>num(d.add(''+num(x.body).body,''+num(y.body).body)),
+  sum:x=>num(x.body.map(a=>x.body.charAt?str(a):a).reduce((a,b)=>d.add(a,''+num(b.body).body),0)),
+  sub:(x,y)=>num(d.sub(''+num(x.body).body,''+num(y.body).body)),
+  mul:(x,y)=>num(d.mul(''+num(x.body).body,''+num(y.body).body)),
+  prod:x=>num(x.body.map(a=>x.body.charAt?str(a):a).reduce((a,b)=>d.mul(a,''+num(b.body).body),1)),
+  div:(x,y)=>num(d.div(''+num(x.body).body,''+num(y.body).body)),
+  mod:(x,y)=>num(d.mod(''+num(x.body).body,''+num(y.body).body)),
+  pow:(x,y)=>
+    (X=d.pow(''+num(x.body).body,''+num(y.body).body))+''=='NaN'?
+      tru(0)
+    :num(X),
+  exp:x=>num(d.exp(''+num(x.body).body)),
+  hypot:(x,y)=>num(d.hypot(''+num(x.body).body,''+num(y.body).body)),
+  fac:x=>ls(
+    _.range(1,Math.abs(X=0|num(x.body).body)/2+1|0)
+      .filter(a=>!(X%a))
+      .map(a=>num(X<0?-a:a))
+      .concat(num(X))
+  ),
+  //logarithms
+  log:(x,y)=>num(d.log(''+num(x.body).body,''+num(y.body).body)),
+  ln:x=>num(d.ln(''+num(x.body).body)),
+  ltn:x=>num(d.log10(''+num(x.body).body)),
+  //trig
+  sin:x=>num(d.sin(''+num(x.body).body)),
+  sinh:x=>num(d.sinh(''+num(x.body).body)),
   asin:x=>num(d.asin(''+num(x.body).body)),
   asinh:x=>num(d.asinh(''+num(x.body).body)),
+  cos:x=>num(d.cos(''+num(x.body).body)),
+  cosh:(x,y)=>num(d.cosh(''+num(x.body).body)),
+  acos:x=>num(d.acos(''+num(x.body).body)),
+  acosh:x=>num(d.acosh(''+num(x.body).body)),
+  tan:x=>num(d.tan(''+num(x.body).body)),
+  tanh:x=>num(d.tanh(''+num(x.body).body)),
   atan:x=>num(d.atan(''+num(x.body).body)),
   atanh:x=>num(d.atanh(''+num(x.body).body)),
   atant:(x,y)=>num(d.atan2(''+num(x.body).body,''+num(y.body).body)),
-  ceil:x=>num(d.ceil(''+num(x.body).body)),
-  cos:x=>num(d.cos(''+num(x.body).body)),
-  cosh:(x,y)=>num(d.cosh(''+num(x.body).body)),
-  div:(x,y)=>num(d.div(''+num(x.body).body,''+num(y.body).body)),
-  exp:x=>num(d.exp(''+num(x.body).body)),
-  flr:x=>num(d.floor(''+num(x.body).body)),
-  hypot:(x,y)=>num(d.hypot(''+num(x.body).body,''+num(y.body).body)),
-  ln:x=>num(d.ln(''+num(x.body).body)),
-  ltn:x=>num(d.log10(''+num(x.body).body)),
-  log:(x,y)=>num(d.log(''+num(x.body).body,''+num(y.body).body)),
-  max:x=>num(d.max(...x.body.map(a=>''+num(a.body).body).value())),
-  min:x=>num(d.min(...x.body.map(a=>''+num(a.body).body).value())),
-  mod:(x,y)=>num(d.mod(''+num(x.body).body,''+num(y.body).body)),
-  mul:(x,y)=>num(d.mul(''+num(x.body).body,''+num(y.body).body)),
-  pow:(x,y)=>+x.body<0?tru(0):num(d.pow(''+num(x.body).body,''+num(y.body).body)),
-  round:x=>num(d.round(''+num(x.body).body)),
-  sign:x=>num(d.sign(''+num(x.body).body)),
-  sin:x=>num(d.sin(''+num(x.body).body)),
-  sinh:x=>num(d.sinh(''+num(x.body).body)),
-  sub:(x,y)=>num(d.sub(''+num(x.body).body,''+num(y.body).body)),
-  tan:x=>num(d.tan(''+num(x.body).body)),
-  tanh:x=>num(d.tanh(''+num(x.body).body)),
-  trunc:x=>num(d.trunc(''+num(x.body).body)),
-  cmp:(x,y)=>num(d(''+num(x.body).body).cmp(''+num(y.body).body)),
+
+  //bool
+  //The tru function is important here
+  bool:tru,
+  tru:x=>tru(tru(x).body||x.type=='num'||x.type=='str'||x.type=='ls'||x.type=='obj'),
+  //comparisons
   eq:(x,y)=>tru(
     form(x.type=='obj'?obj(x.body.sort().toObject()):x)==form(y.type=='obj'?obj(y.body.sort().toObject()):y)
     ||(x.body.charAt&&y.body.charAt&&''+num(x.body).body==''+num(y.body).body)
@@ -225,7 +325,14 @@ cm={
   lt:(x,y)=>tru(+d(''+num(x.body).body).cmp(''+num(y.body).body)==-1),
   lteq:(x,y)=>tru(+d(''+num(x.body).body).lte(''+num(y.body).body)),
   gteq:(x,y)=>tru(+d(''+num(x.body).body).gte(''+num(y.body).body)),
-  neg:x=>num(d(num(x.body).body+'').neg()),
+  //boolean logic
+  and:(x,y)=>tru(tru(x).body&&tru(y).body),
+  or:(x,y)=>tru(tru(x).body||tru(y).body),
+  xor:(x,y)=>tru(+(tru(x).body!=tru(y).body)),
+  not:x=>tru(+!tru(x).body),
+
+  //map family
+  //y.body.charAt?str(a):a converts any iterable type to a list
   map:(x,y)=>ls(y.body.map(a=>I(app(x,y.body.charAt?str(a):a)))),
   fold:(x,y)=>y.body.reduce((a,b)=>I(app(app(x.body.get(0),b),y.body.charAt?str(a):a)),x.body.get(1)),
   foldr:(x,y)=>y.body.reduceRight((a,b)=>I(app(app(x.body.get(0),b),y.body.charAt?str(a):a)),x.body.get(1)),
@@ -236,7 +343,11 @@ cm={
   findi:(x,y)=>y.body.map((a,b)=>tru(I(app(x,y.body.charAt?str(a):a))).body?num(b):0).find(a=>a)||bool(0),
   every:(x,y)=>tru(y.body.every(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   some:(x,y)=>tru(y.body.some(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
+
+  //array getting, setting, manipulating
   len:x=>num(len(x)),
+  tk:(x,y)=>ls(y.body.take(0|num(x.body).body).map(a=>a.charAt?str(a):a)),
+  dp:(x,y)=>ls(y.body.drop(0|num(x.body).body).map(a=>a.charAt?str(a):a)),
   get:(x,y)=>I((
     y.type=='pm'?
       app(y,x)
@@ -281,42 +392,81 @@ cm={
       ls(Y.take(0|x.body.get(0).body).concat(x.body.get(1),
       Y.drop(0|x.body.get(0).body)))
     ),
-  join:(x,y)=>str(y.body.map(sform).join(sform(x))),
-  split:(x,y)=>ls(XRE.split(''+y.body,rgx(x)).map(str)),
-  tc:x=>ls(x.body.map(a=>num(a.codePointAt()))),
-  fc:x=>str(x.type=='ls'?x.body.map(a=>cm.fc(I(a)).body).join(''):String.fromCodePoint(0|num(x.body).body)),
-  bool:tru,
-  num:x=>num(x.body),
-  rnd:x=>num(0|num(x.body).body?d.random(0|num(x.body).body):''+0|d.random()*2),
   con:(x,y)=>
     x.type!='ls'?
       x.type!='obj'?
         str(sform(x)+sform(y))
       :obj(Object.assign(x.body.value(),y.body.map(a=>y.body.charAt?str(a):a).value()))
     :cm.flat(ls([x,y])),
+  iO:(x,y)=>ls(y.body.map((a,b)=>cm.eq(y.body.charAt?str(a):a,x).body?num(b):0).filter(a=>a)),
+  fiO:(x,y)=>y.body.map((a,b)=>cm.eq(y.body.charAt?str(a):a,x).body?num(b):0).find(a=>a)||bool(0),
   rev:x=>ls(x.body.map(a=>x.body.charAt?str(a):a).reverse()),
+  shuf:x=>ls((x.body.charAt?x.body.map(str):x.body).shuffle()),
+  sort:(x,y)=>ls(y.body.sortBy(a=>num(I(app(x,y.body.charAt?str(a):a)).body).body)),
+
+  //generating sequences
   rng:(x,y)=>([X,Y]=[+x.body,+y.body],ls(l.generate(a=>num(d.add(a,''+num(x.body).body))).take(Y-X))),
+  gen:x=>ls(l.generate(a=>app(x,num(a)),1/0)),
+  genc:(x,y)=>ls(l.generate(a=>[...Array(a)].reduce(i=>I(app(x,i)),y),1/0)),
+  rpt:x=>ls(l.repeat(x,1/0)),
+  cyc:x=>ls(l.generate(a=>cm.get(num(a),x),1/0)),
+
+  //set operations
+  unq:x=>ls(x.body.map(i=>i.charAt?str(i):i).uniq(a=>form(a.type=='obj'?obj(a.body.sort().toObject()):a))),
+  inx:(x,y)=>(
+    [X,Y]=[x.body.map(a=>x.body.charAt?str(a):a),y.body.map(a=>y.body.charAt?str(a):a)],
+    ls(X.filter(a=>Y.find(b=>cm.eq(a,b).body)))
+  ),
+  uni:(x,y)=>cm.unq(cm.flat(ls([ls(x.body.map(a=>a.charAt?str(a):a)),ls(y.body.map(a=>a.charAt?str(a):a))]))),
+  dff:(x,y)=>(
+    [X,Y]=[x.body.map(a=>x.body.charAt?str(a):a),y.body.map(a=>y.body.charAt?str(a):a)],
+    A=X.concat(Y),
+    ls(X.filter(a=>
+      !Y.find(b=>cm.eq(a,b).body)
+    ))
+  ),
+
+  //nested lists
+  chunk:(x,y)=>ls(
+    y.body.charAt?
+      y.body.chunk(0|num(x.body).body).map(a=>str(a.join``))
+    :y.body.chunk(0|num(x.body).body).map(ls)
+  ),
+  tsp:x=>ls(
+    x.body.first().body.map((a,i)=>ls(
+        x.body.map(b=>b.body.get(i)).map(b=>b?b.charAt?str(b):b:tru(0))
+    ))
+  ),
+  flat:x=>ls(x.body.map(a=>x.body.charAt?str(a):a.type=='ls'?a.body:a).flatten()),
+  zip:(x,y)=>cm.map(I(app(fn('sS'),x)),cm.tsp(y)),
+  cns:(x,y)=>ls(y.body.map(a=>y.body.charAt?str(a):a).consecutive(0|num(x.body).body).map(ls)),
+
+  //obj
+  ind:x=>cm.tsp(I(ls(x.type=='obj'?[ls(x.body.keys().map(a=>str(''+a))),ls(x.body.values())]:[cm.rng(num(0),num(len(x))),x]))),
+  key:x=>cm.tsp(cm.ind(x)).body.first(),
+  val:x=>cm.tsp(cm.ind(x)).body.last(),
+  pk:(x,y)=>obj(y.body.pick(x.body.map(a=>a.body).value())),
+  om:(x,y)=>obj(y.body.omit(x.body.map(a=>a.body).value())),
+  obj:x=>obj(x.body.map(a=>[sform((A=a.body.get(0)).charAt?str(A):A),(B=a.body.get(1)).charAt?str(B):B]).toObject()),
+  obl:x=>cm.obj(cm.tsp(ls([cm.key(x),x]))),
+
+  //str
   str:x=>str(sform(x)),
   src:x=>str(form(x).replace(/\x1b\[\d+m/g,'')),
-  eval:x=>parser.parse(''+x.body),
-  S:(x,y)=>I(app(x,y)),
-  sleep:x=>(slp.usleep(0|num(x.body).body),x),
-  tt:x=>(x.rev=1,x),
-  sort:(x,y)=>ls(y.body.sortBy(a=>num(I(app(x,y.body.charAt?str(a):a)).body).body)),
-  shuf:x=>ls((x.body.charAt?x.body.map(str):x.body).shuffle()),
-  type:x=>str(x.type),
-  sum:x=>num(x.body.map(a=>x.body.charAt?str(a):a).reduce((a,b)=>d.add(a,''+num(b.body).body),0)),
-  prod:x=>num(x.body.map(a=>x.body.charAt?str(a):a).reduce((a,b)=>d.mul(a,''+num(b.body).body),1)),
-  chunk:(x,y)=>ls(y.body.charAt?y.body.chunk(0|num(x.body).body).map(a=>str(a.join``)):y.body.chunk(0|num(x.body).body).map(ls)),
-  K:(x,y)=>x,
-  I:x=>x,
-  and:(x,y)=>tru(tru(x).body&&tru(y).body),
-  or:(x,y)=>tru(tru(x).body||tru(y).body),
-  xor:(x,y)=>tru(+(tru(x).body!=tru(y).body)),
-  not:x=>tru(+!tru(x).body),
+  join:(x,y)=>str(y.body.map(sform).join(sform(x))),
+  lc:x=>str((''+x.body).toLowerCase()),
+  uc:x=>str((''+x.body).toUpperCase()),
+
+  //rgx
+  R:(x,y)=>({type:'rgx',body:XRE(''+x.body,''+y.body)}),
+  //matching
   mstr:(x,y)=>obj(l(Object.assign({},XRE.match(''+y.body,rgx(x))||[])).map((a,b)=>[b,str(a)]).toObject()),
   xstr:(x,y)=>obj(l(Object.assign({},XRE.exec(''+y.body,rgx(x))||[])).map((a,b)=>[b,(a.toFixed?num:str)(a)]).toObject()),
   sstr:(x,y)=>num((XRE.exec(''+y.body,rgx(x))||[]).index||bool(0)),
+  gstr:(x,y)=>ls(y.body.split('\n').filter(a=>XRE.match(a,rgx(x))).map(str)),
+  Gstr:(x,y)=>ls(y.body.split('\n').reject(a=>XRE.match(a,rgx(x))).map(str)),
+  //replacing
+  split:(x,y)=>ls(XRE.split(''+y.body,rgx(x)).map(str)),
   rstr:(x,y)=>str(
     XRE.replace(
       y.body+'',
@@ -330,58 +480,27 @@ cm={
     tru(cm.mstr(x.body.get(0),y)).body?
       cm.Rstr(x,cm.rstr(x,y))
     :y,
-  gstr:(x,y)=>ls(y.body.split('\n').filter(a=>XRE.match(a,rgx(x))).map(str)),
-  Gstr:(x,y)=>ls(y.body.split('\n').reject(a=>XRE.match(a,rgx(x))).map(str)),
-  R:(x,y)=>({type:'rgx',body:XRE(''+x.body,''+y.body)}),
+
+  //flow
+  type:x=>str(x.type),
   var:(x,y)=>vs[x.body]?vs[x.body]:(vs[x.body]=y),
-  tk:(x,y)=>ls(y.body.take(0|num(x.body).body).map(a=>a.charAt?str(a):a)),
-  dp:(x,y)=>ls(y.body.drop(0|num(x.body).body).map(a=>a.charAt?str(a):a)),
-  gen:x=>ls(l.generate(a=>app(x,num(a)),1/0)),
-  genc:(x,y)=>ls(l.generate(a=>[...Array(a)].reduce(i=>I(app(x,i)),y),1/0)),
-  rpt:x=>ls(l.repeat(x,1/0)),
-  inx:(x,y)=>(
-    [X,Y]=[x.body.map(a=>x.body.charAt?str(a):a),y.body.map(a=>y.body.charAt?str(a):a)],
-    ls(X.filter(a=>Y.find(b=>cm.eq(a,b).body)))
-  ),
-  uni:(x,y)=>cm.unq(cm.flat(ls([ls(x.body.map(a=>a.charAt?str(a):a)),ls(y.body.map(a=>a.charAt?str(a):a))]))),
-  unq:x=>ls(x.body.map(i=>i.charAt?str(i):i).uniq(a=>form(a.type=='obj'?obj(a.body.sort().toObject()):a))),
-  dff:(x,y)=>(
-    [X,Y]=[x.body.map(a=>x.body.charAt?str(a):a),y.body.map(a=>y.body.charAt?str(a):a)],
-    A=X.concat(Y),
-    ls(X.filter(a=>
-      !Y.find(b=>cm.eq(a,b).body)
-    ))
-  ),
-  iO:(x,y)=>ls(y.body.map((a,b)=>cm.eq(y.body.charAt?str(a):a,x).body?num(b):0).filter(a=>a)),
-  fiO:(x,y)=>y.body.map((a,b)=>cm.eq(y.body.charAt?str(a):a,x).body?num(b):0).find(a=>a)||bool(0),
-  exit:x=>{process.exit()},
-  sh:x=>str(Exec(''+x.body)+''),
   while:(x,y)=>([X,Y]=[x.body.get(0),x.body.get(1)],tru(I(app(X,y))).body?cm.while(x,I(app(Y,y))):y),
-  cns:(x,y)=>ls(y.body.map(a=>y.body.charAt?str(a):a).consecutive(0|num(x.body).body).map(ls)),
-  tsp:x=>ls(x.body.first().body.map((a,i)=>ls(x.body.map(b=>b.body.get(i)).map(b=>b?b.charAt?str(b):b:tru(0))))),
   pkg:x=>pkg(''+x.body),
-  ind:x=>cm.tsp(I(ls(x.type=='obj'?[ls(x.body.keys().map(a=>str(''+a))),ls(x.body.values())]:[cm.rng(num(0),num(len(x))),x]))),
-  cyc:x=>ls(l.generate(a=>cm.get(num(a),x),1/0)),
-  lc:x=>str((''+x.body).toLowerCase()),
-  uc:x=>str((''+x.body).toUpperCase()),
-  hx:x=>str(d(''+num(x.body).body).toHexadecimal()),
-  bn:x=>str(d(''+num(x.body).body).toBinary()),
-  ot:x=>str(d(''+num(x.body).body).toOctal()),
-  key:x=>cm.tsp(cm.ind(x)).body.first(),
-  val:x=>cm.tsp(cm.ind(x)).body.last(),
-  pk:(x,y)=>obj(y.body.pick(x.body.map(a=>a.body).value())),
-  om:(x,y)=>obj(y.body.omit(x.body.map(a=>a.body).value())),
+  eval:x=>parser.parse(''+x.body),
+  sh:x=>str(Exec(''+x.body)+''),
   js:x=>(eval(''+x.body),x),
+  sleep:x=>(slp.usleep(0|num(x.body).body),x),
+  exit:x=>{process.exit()},
+  //combinators/applications
+  S:(x,y)=>I(app(x,y)),
+  K:(x,y)=>x,
+  I:x=>x,
+  tt:x=>(x.rev=1,x),
   ss:(x,y)=>x.body.reduceRight((a,b)=>I(app(b,a)),y),
-  sS:(x,y)=>y.body.reduce((a,b)=>I(app(a,b)),x),
-  zip:(x,y)=>cm.map(I(app(fn('sS'),x)),cm.tsp(y)),
-  flat:x=>ls(x.body.map(a=>x.body.charAt?str(a):a.type=='ls'?a.body:a).flatten()),
-  obj:x=>obj(x.body.map(a=>[sform((A=a.body.get(0)).charAt?str(A):A),(B=a.body.get(1)).charAt?str(B):B]).toObject()),
-  obl:x=>cm.obj(cm.tsp(ls([cm.key(x),x]))),
-  tru:x=>tru(tru(x).body||x.type=='num'||x.type=='str'||x.type=='ls'||x.type=='obj'),
-  fac:x=>ls(_.range(1,Math.abs(X=0|num(x.body).body)/2|0+1).filter(a=>!(X%a)).map(a=>num(X<0?-a:a)).concat(num(X)))
+  sS:(x,y)=>y.body.reduce((a,b)=>I(app(a,b)),x)
 };
 
+//cm aliases
 [
   ['+','add'],
   ['|^','ceil'],
@@ -430,15 +549,16 @@ cm={
   ["'",'tsp'],
   [',','ind']
 ].map(a=>cm[a[0]]=cm[a[1]])
-//.map(x=>`\`${x[0]}\`|`+x[1]).join`\n`
 
 Pr=[]
 
+//error message displaying
 const error=(e,f)=>{
   console.log('\x1b[31mERROR:\x1b[0m '+e)
   f&&process.exit()
 },
 
+//getting error type
 ERR=e=>
   e.message.match`\\[DecimalError\\]`?
     e.message.match(`Invalid argument`)&&'invalid argument passed to '+(e.stack.match`cm\\.([^ \\n;0-9".[\\]\\(){}@#TF?]+) `||[,'number conversion'])[1]
@@ -452,6 +572,9 @@ ERR=e=>
     `backreference to ${e.stack.match`Backreference to undefined group (.+)`[1]} not found`
   :'js error -> '+e.stack,
 
+//WARNING: The code following this comment will be quite messy. Good luck!
+
+//de Bruijn indices substitution
 ua=(x,y)=>(X=tr(x),X.map(function(a){
   a.type=='a'&&(
     a.body==(D=this.path.filter(($,i,j)=>(gX=X.get(j.slice(0,i+1)))&&gX.type=='def').length)?
@@ -466,12 +589,14 @@ ua=(x,y)=>(X=tr(x),X.map(function(a){
   )
 })),
 
+//substitution inside evaluation blocks
 Ua=(x,y,z)=>tr(x).map(function(a){
   a.type=='ev'&&a.f.body==y.body?
     this.update(Ua(I(a),y,z))
   :(a.type=='fn'||a.type=='ref')&&a.body==y.body&&this.update(z)
 }),
 
+//the core evaluation function
 I=x=>
   !x||(x.type=='num'&&x.body=='NaN')||(x.pop&&!x.length)?
     tru(0)
@@ -521,6 +646,8 @@ I=x=>
     :z
   :x,
 
+//pre-initialized variables
+//variables with x=> in front of them will be re-evaluated each call
 vs={
   pi:x=>num(d.acos(-1)),
   e:x=>num(d.exp(1)),
@@ -535,9 +662,14 @@ vs={
 
 halt=1
 
+//when module is called by require
+//not sure if needed, will keep in case
 if(require.main!=module){
   module.exports=this
-}else if(F=fg.get('f')){
+}
+
+//reading from file with --f
+else if(F=fg.get('f')){
   try{
     const code=fs.readFileSync(F)+'',
     ps=parser.parse(code)
@@ -546,7 +678,10 @@ if(require.main!=module){
   }catch(e){
     error(ERR(e),halt)
   }
-}else if(E=fg.get('e')){
+}
+
+//reading from string with --e
+else if(E=fg.get('e')){
   try{
     ps=parser.parse(E)
     ps&&ps.length&&(fg.get('expr')?console.log('\n'+form(I(ps))):I(ps))
@@ -554,11 +689,18 @@ if(require.main!=module){
   }catch(e){
     error(ERR(e),halt)
   }
-}else{
+}
+
+//REPL when no flags read
+else{
   logo=fs.readFileSync(__dirname+'/wonder.txt')+''
   pkg=fs.readFileSync(__dirname+'/package.json')+''
   halt=0
+
+  //this messy code displays the logo/REPL header
   console.log(`\x1b[36m\x1b[1m${logo}\x1b[0m\n\n\x1b[93m\x1b[1mv${JSON.parse(pkg).version}\x1b[21m\n\x1b[2mMade with love under the MIT License.\x1b[0m\n\n`)
+
+  //keypress init
   key(process.stdin)
   ow=x=>(process.stdout.clearLine(),process.stdout.cursorTo(0),process.stdout.write(x))
   Prompt=require('prompt-sync')({
@@ -574,6 +716,8 @@ if(require.main!=module){
       :0
     )
   })
+
+  //REPL time!
   for(;;){
     p=Prompt('wonder > ')
     Prompt.history.save()
