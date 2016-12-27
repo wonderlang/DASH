@@ -292,6 +292,8 @@ cm={
       .map(a=>num(X<0?-a:a))
       .concat(num(X))
   ),
+  gcd:(x,y)=>num((g=(m,n)=>m>n?g(m-n,n):m<n?g(m,n-m):m)(Math.abs(0|x.body),Math.abs(0|y.body))),
+  lcm:(x,y)=>(X=Math.abs(0|x.body),Y=Math.abs(0|y.body),X*Y/cm.gcd(x,y)),
   //logarithms
   log:(x,y)=>num(d.log(''+num(x.body).body,''+num(y.body).body)),
   ln:x=>num(d.ln(''+num(x.body).body)),
