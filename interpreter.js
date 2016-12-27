@@ -224,6 +224,12 @@ pkg=x=>{
   return I(parser.parse(f))
 },
 
+//prime generator
+Pr=[],
+pr=l.generate(x=>x+2,1/0).filter(
+  x=>(X=l(Pr).filter(a=>a*a<=x).every(a=>x%a),X&&Pr.push(x),X)
+),
+
 //STDLIB is called cm
 //This will be one helluva challenge to read, I'm sure. Sorry!
 //All cm functions are either unary or binary; no more, no less.
@@ -286,12 +292,15 @@ cm={
     :num(X),
   exp:x=>num(d.exp(''+num(x.body).body)),
   hypot:(x,y)=>num(d.hypot(''+num(x.body).body,''+num(y.body).body)),
+  //factorization
   fac:x=>ls(
-    _.range(1,Math.abs(X=0|num(x.body).body)/2+1|0)
+    _.range(1,(X=Math.abs(0|num(x.body).body))/2+1|0)
       .filter(a=>!(X%a))
-      .map(a=>num(X<0?-a:a))
+      .map(num)
       .concat(num(X))
   ),
+  pfac:x=>ls(cm.fac(x).body.filter(a=>cm.pr(a).body)),
+  pr:x=>tru(cm.len(cm.fac(x)).body+''==2),
   gcd:(x,y)=>num((g=(m,n)=>m>n?g(m-n,n):m<n?g(m,n-m):m)(Math.abs(0|x.body),Math.abs(0|y.body))),
   lcm:(x,y)=>(X=0|x.body,Y=0|y.body,X*Y/cm.gcd(x,y)),
   //logarithms
@@ -342,7 +351,7 @@ cm={
   drwl:(x,y)=>ls(y.body.dropWhile(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   fltr:(x,y)=>ls(y.body.filter(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   find:(x,y)=>y.body.find(a=>tru(I(app(x,y.body.charAt?str(a):a))).body),
-  findi:(x,y)=>y.body.map((a,b)=>tru(I(app(x,y.body.charAt?str(a):a))).body?num(b):0).find(a=>a)||bool(0),
+  findi:(x,y)=>y.body.map((a,b)=>tru(I(app(x,y.body.charAt?str(a):a))).body?num(b):0).find(a=>a)||tru(0),
   every:(x,y)=>tru(y.body.every(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   some:(x,y)=>tru(y.body.some(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
 
@@ -401,7 +410,7 @@ cm={
       :obj(Object.assign(x.body.value(),y.body.map(a=>y.body.charAt?str(a):a).value()))
     :cm.flat(ls([x,y])),
   iO:(x,y)=>ls(y.body.map((a,b)=>cm.eq(y.body.charAt?str(a):a,x).body?num(b):0).filter(a=>a)),
-  fiO:(x,y)=>y.body.map((a,b)=>cm.eq(y.body.charAt?str(a):a,x).body?num(b):0).find(a=>a)||bool(0),
+  fiO:(x,y)=>y.body.map((a,b)=>cm.eq(y.body.charAt?str(a):a,x).body?num(b):0).find(a=>a)||tru(0),
   rev:x=>ls(x.body.map(a=>x.body.charAt?str(a):a).reverse()),
   shuf:x=>ls((x.body.charAt?x.body.map(str):x.body).shuffle()),
   sort:(x,y)=>ls(y.body.sortBy(a=>num(I(app(x,y.body.charAt?str(a):a)).body).body)),
@@ -464,7 +473,7 @@ cm={
   //matching
   mstr:(x,y)=>obj(l(Object.assign({},XRE.match(''+y.body,rgx(x))||[])).map((a,b)=>[b,str(a)]).toObject()),
   xstr:(x,y)=>obj(l(Object.assign({},XRE.exec(''+y.body,rgx(x))||[])).map((a,b)=>[b,(a.toFixed?num:str)(a)]).toObject()),
-  sstr:(x,y)=>num((XRE.exec(''+y.body,rgx(x))||[]).index||bool(0)),
+  sstr:(x,y)=>num((XRE.exec(''+y.body,rgx(x))||[]).index||tru(0)),
   gstr:(x,y)=>ls(y.body.split('\n').filter(a=>XRE.match(a,rgx(x))).map(str)),
   Gstr:(x,y)=>ls(y.body.split('\n').reject(a=>XRE.match(a,rgx(x))).map(str)),
   //replacing
@@ -551,8 +560,6 @@ cm={
   ["'",'tsp'],
   [',','ind']
 ].map(a=>cm[a[0]]=cm[a[1]])
-
-Pr=[]
 
 //error message displaying
 const error=(e,f)=>{
@@ -657,9 +664,7 @@ vs={
   ep:x=>num('.'+'0'.repeat(d.precision)+1),
   cm:x=>ls(l(cm).map((a,b)=>fn(b))),
   N:ls(l.generate(x=>num(x),1/0)),
-  P:ls(l.generate(x=>x+2,1/0).filter(
-    x=>(X=l(Pr).filter(a=>a*a<=x).every(a=>x%a),X&&Pr.push(x),X)
-  ).map(num))
+  P:ls(pr.map(num))
 }
 
 halt=1
