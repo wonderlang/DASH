@@ -213,10 +213,10 @@ sform=x=>
     `{pm}`
   :error('failed to format JSON\n'+JSON.stringify(x),halt),
 
-//Package reading function, reads directly from the dpm folder in the CWD.
+//Package reading function, reads directly from the wpm folder in the CWD.
 pkg=x=>{
   try{
-    f=fs.readFileSync((`dpm/${x}/`+fs.readFileSync(`dpm/${x}/pkg`)).replace(/\s/g,''))+''
+    f=fs.readFileSync((`wpm/${x}/`+fs.readFileSync(`wpm/${x}/pkg`)).replace(/\s/g,''))+''
   }
   catch(e){
     error(`failed to read package "${x}"\n`,halt)
