@@ -21,6 +21,7 @@
   "dependencies": {
     "decimal.js": "^6.0.0",
     "flags": "^0.1.3",
+    "js-combinatorics": "^0.5.2",
     "keypress": "^0.2.1",
     "lazy.js": "^0.4.2",
     "lodash": "^4.16.4",
