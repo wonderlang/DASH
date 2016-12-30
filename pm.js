@@ -29,7 +29,7 @@ if(process.argv[2]=='install'){
     //perform a git clone inside wpm if pkg doesn't exist already
     fs.readdir('wpm/'+X[1],a=>{
       a&&a.code=='ENOENT'&&(
-        Exec(`cd dpm;git clone -q ${X[0]} ${X[1]}`),
+        Exec(`cd wpm;git clone -q ${X[0]} ${X[1]}`),
         console.log(`Cloned package "${X[1]}" into wpm`)
       )
     })
