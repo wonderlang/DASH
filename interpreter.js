@@ -573,7 +573,7 @@ cm={
   pkg:x=>pkg(''+x.body),
   eval:x=>parser.parse(''+x.body),
   sh:x=>str(Exec(''+x.body)+''),
-  js:x=>(eval(''+x.body),x),
+  js:x=>str(eval(''+x.body)+''),
   sleep:x=>(slp.usleep(0|num(x.body).body),x),
   exit:x=>{process.exit()},
   //combinators/applications
