@@ -147,7 +147,7 @@ uapp="'"a:fn _*b:type{
     f:b
   }
 }
-comp=a:(uapp/aapp/app/fn/def/arg/ls/obj/pm/rgx)_*b:('.'_*(uapp/aapp/app/fn/def/arg/ls/obj/pm/rgx)_*)+{
+comp=a:(uapp/aapp/get/app/fn/def/arg/ls/obj/pm/rgx)_*b:('.'_*(uapp/aapp/get/app/fn/def/arg/ls/obj/pm/rgx)_*)+{
   return{
     type:'app',
     body:{type:'fn',body:'ss'},
