@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=get/str/rgx/bin/oct/hex/num/bool/cond/ls/ev/obj/pm/var/comp/uapp/aapp/app/pm/def/arg/fn/a/ref
+type=str/rgx/bin/oct/hex/num/bool/cond/ls/ev/obj/pm/var/comp/uapp/aapp/app/pm/def/arg/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -147,7 +147,7 @@ uapp="'"a:fn _*b:type{
     f:b
   }
 }
-comp=a:(uapp/aapp/get/app/fn/def/arg/ls/obj/pm/rgx)_*b:('.'_*(uapp/aapp/get/app/fn/def/arg/ls/obj/pm/rgx)_*)+{
+comp=a:(uapp/aapp/app/fn/def/arg/ls/obj/pm/rgx)_*b:('.'_*(uapp/aapp/app/fn/def/arg/ls/obj/pm/rgx)_*)+{
   return{
     type:'app',
     body:{type:'fn',body:'ss'},
@@ -190,14 +190,5 @@ ev=a:arg _*b:var{
     body:a.filter(x=>!x.big),
     f:b.body,
     g:b.f
-  }
-}
-
-//get
-get=a:(rgx/ls/obj/pm)_*b:type{
-  return{
-    type:'app',
-    body:a,
-    f:b
   }
 }

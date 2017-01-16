@@ -326,7 +326,7 @@ cm={
   //bool
   //The tru function is important here
   bool:tru,
-  tru:x=>tru(tru(x).body||x.type=='num'||x.type=='str'||x.type=='ls'||x.type=='obj'),
+  tru:x=>tru(tru(x).body||x.type!='bool'),
   //comparisons
   eq:(x,y)=>tru(
     form(x.type=='obj'?obj(x.body.sort().toObject()):x)==form(y.type=='obj'?obj(y.body.sort().toObject()):y)
