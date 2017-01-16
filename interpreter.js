@@ -300,9 +300,15 @@ cm={
       .map(num)
       .concat(num(X))
   ),
-  pfac:x=>ls(cm.fac(x).body.filter(a=>cm.pr(a).body)),
+  pfac:x=>cm.flat(ls(
+    cm.pr(x).body?
+      [x]
+    :[num(X=cm.fac(x).body.get(1).body),cm.pfac(num(x.body/X))]
+  )),
   pr:x=>tru(cm.len(cm.fac(x)).body+''==2),
-  gcd:(x,y)=>num((g=(m,n)=>m>n?g(m-n,n):m<n?g(m,n-m):m)(Math.abs(0|x.body),Math.abs(0|y.body))),
+  gcd:(x,y)=>num((
+    g=(m,n)=>m>n?g(m-n,n):m<n?g(m,n-m):m
+  )(Math.abs(0|x.body),Math.abs(0|y.body))),
   lcm:(x,y)=>(X=0|x.body,Y=0|y.body,X*Y/cm.gcd(x,y)),
   //logarithms
   log:(x,y)=>num(d.log(''+num(x.body).body,''+num(y.body).body)),
