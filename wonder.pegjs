@@ -194,7 +194,7 @@ ev=a:arg _*b:var{
 }
 
 //get
-get=a:(rgx/ls/obj/pm/comp)_*b:type{
+get=a:(rgx/ls/obj/pm)_*b:type{
   return{
     type:'app',
     body:a,
