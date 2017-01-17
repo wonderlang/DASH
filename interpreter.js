@@ -342,9 +342,7 @@ cm={
     form(x.type=='obj'?obj(x.body.sort().toObject()):x)==form(y.type=='obj'?obj(y.body.sort().toObject()):y)
     ||(x.body.charAt&&y.body.charAt&&''+num(x.body).body==''+num(y.body).body)
   ),
-  Eq:(x,y)=>tru(
-    cm.eq(x,y).body&&x.type==y.type
-  )
+  Eq:(x,y)=>tru(cm.eq(x,y).body&&x.type==y.type),
   gt:(x,y)=>tru(+d(''+num(x.body).body).cmp(''+num(y.body).body)==1),
   lt:(x,y)=>tru(+d(''+num(x.body).body).cmp(''+num(y.body).body)==-1),
   lteq:(x,y)=>tru(+d(''+num(x.body).body).lte(''+num(y.body).body)),
