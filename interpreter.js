@@ -229,12 +229,6 @@ pkg=x=>{
   return I(parser.parse(f))
 },
 
-//prime generator
-Pr=[],
-pr=l.generate(x=>x+2,1/0).filter(
-  x=>(X=l(Pr).filter(a=>a*a<=x).every(a=>x%a),X&&Pr.push(x),X)
-),
-
 //STDLIB is called cm
 //This will be one helluva challenge to read, I'm sure. Sorry!
 //All cm functions are either unary or binary; no more, no less.
@@ -309,7 +303,12 @@ cm={
       [x]
     :[num(X=cm.fac(x).body.get(1).body),cm.pfac(num(x.body/X))]
   )),
-  pr:x=>tru(cm.len(cm.fac(x)).body+''==2),
+  pr:x=>tru(
+    +num(x.body).body>1&&
+      !cm.fac(x).body.find(a=>
+        +a.body>1&&+a.body<+num(x.body).body
+      )
+  ),
   gcd:(x,y)=>num((
     g=(m,n)=>m>n?g(m-n,n):m<n?g(m,n-m):m
   )(Math.abs(0|x.body),Math.abs(0|y.body))),
@@ -339,8 +338,14 @@ cm={
   tru:x=>tru(tru(x).body||x.type!='bool'),
   //comparisons
   eq:(x,y)=>tru(
-    form(x.type=='obj'?obj(x.body.sort().toObject()):x)==form(y.type=='obj'?obj(y.body.sort().toObject()):y)
-    ||(x.body.charAt&&y.body.charAt&&''+num(x.body).body==''+num(y.body).body)
+    form(
+      x.type=='obj'?obj(x.body.sort().toObject()):x
+    )==form(
+      y.type=='obj'?obj(y.body.sort().toObject()):y
+    )||
+      (x.body.charAt&&y.body.charAt&&
+        ''+num(x.body).body==''+num(y.body).body
+      )
   ),
   Eq:(x,y)=>tru(cm.eq(x,y).body&&x.type==y.type),
   gt:(x,y)=>tru(+d(''+num(x.body).body).cmp(''+num(y.body).body)==1),
@@ -750,7 +755,7 @@ vs={
   ep:x=>num('.'+'0'.repeat(d.precision)+1),
   cm:x=>ls(l(cm).map((a,b)=>fn(b))),
   N:ls(l.generate(x=>num(x),1/0)),
-  P:ls(pr.map(num))
+  P:cm.fltr(fn('pr'),ls(l.generate(x=>num(x),1/0)))
 }
 
 halt=1
