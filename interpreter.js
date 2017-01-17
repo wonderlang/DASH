@@ -33,7 +33,7 @@ d.config({
 fg.defineBoolean('expr',true)
 fg.defineString('f')
 fg.defineString('e')
-fg.defineNumber('tk',1e3)
+fg.defineNumber('tk',0)
 fg.parse()
 
 //Custom tokens
@@ -150,9 +150,11 @@ form=x=>
     `\x1b[36m${x.body?'T':'F'}\x1b[0m`
   :x.type=='ls'?
     `[${
-      x.body.take?
-        x.body.take(fg.get('tk')).map(form).join(';')+(x.body.get(fg.get('tk')+1)?';...':'')
-      :x.body.map(form).join('')
+      fg.get('tk')?
+        x.body.take?
+          x.body.take(fg.get('tk')).map(form).join(';')+(x.body.get(fg.get('tk')+1)?';...':'')
+        :x.body.map(form).join('')
+      :'ls'
     }]`
   :x.type=='obj'?
     `{${l(x.body).map((a,b)=>'\x1b[32m"'+b+'"\x1b[0m\\'+form(a)).value().join`;`}}`
@@ -161,7 +163,9 @@ form=x=>
   :x.map?
     `(${x.map(form).join`;`})`
   :x.type=='pt'?
-    `\x1b[34m${x.body}\x1b[0m `+form(x.f)
+    x.rev?
+      `(\x1b[34mtt ${x.body}\x1b[0m ${form(x.f)})`
+    :`\x1b[34m${x.body}\x1b[0m `+form(x.f)
   :x.type=='a'?
     `\x1b[34m#${x.body}\x1b[0m`
   :x.type=='ref'?
@@ -338,7 +342,9 @@ cm={
     form(x.type=='obj'?obj(x.body.sort().toObject()):x)==form(y.type=='obj'?obj(y.body.sort().toObject()):y)
     ||(x.body.charAt&&y.body.charAt&&''+num(x.body).body==''+num(y.body).body)
   ),
-  neq:(x,y)=>cm.not(cm.eq(x,y)),
+  Eq:(x,y)=>tru(
+    cm.eq(x,y).body&&x.type==y.type
+  )
   gt:(x,y)=>tru(+d(''+num(x.body).body).cmp(''+num(y.body).body)==1),
   lt:(x,y)=>tru(+d(''+num(x.body).body).cmp(''+num(y.body).body)==-1),
   lteq:(x,y)=>tru(+d(''+num(x.body).body).lte(''+num(y.body).body)),
@@ -586,7 +592,7 @@ cm={
   S:(x,y)=>I(app(x,y)),
   K:(x,y)=>x,
   I:x=>x,
-  tt:x=>(x.rev=1,x),
+  tt:x=>(x.rev=x.rev!=[]._?!x.rev:1,x),
   ss:(x,y)=>x.body.reduceRight((a,b)=>I(app(b,a)),y),
   sS:(x,y)=>y.body.reduce((a,b)=>I(app(a,b)),x)
 };
@@ -606,6 +612,7 @@ cm={
   ['-','sub'],
   ['|-','trunc'],
   ['=','eq'],
+  ['==','Eq'],
   ['>','gt'],
   ['<','lt'],
   ['>=','gteq'],
