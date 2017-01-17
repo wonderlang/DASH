@@ -153,7 +153,7 @@ form=x=>
       fg.get('tk')?
         x.body.take?
           x.body.take(fg.get('tk')).map(form).join(';')+(x.body.get(fg.get('tk')+1)?';...':'')
-        :x.body.map(form).join('')
+        :x.body.map(form).join(';')
       :'ls'
     }]`
   :x.type=='obj'?
