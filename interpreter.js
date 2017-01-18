@@ -298,17 +298,19 @@ cm={
       .map(num)
       .concat(num(X))
   ),
-  pfac:x=>cm.flat(ls(
-    cm.pr(x).body?
+  pfac:x=>(x=num(Math.abs(+num(x.body).body)),cm.flat(ls(
+    +num(x.body).body<2?
+      []
+    :cm.pr(x).body?
       [x]
     :[num(X=cm.fac(x).body.get(1).body),cm.pfac(num(x.body/X))]
-  )),
-  pr:x=>tru(
+  ))),
+  pr:x=>(x=num(Math.abs(+num(x.body).body)),tru(
     +num(x.body).body>1&&
       !cm.fac(x).body.find(a=>
         +a.body>1&&+a.body<+num(x.body).body
       )
-  ),
+  )),
   gcd:(x,y)=>num((
     g=(m,n)=>m>n?g(m-n,n):m<n?g(m,n-m):m
   )(Math.abs(0|x.body),Math.abs(0|y.body))),
