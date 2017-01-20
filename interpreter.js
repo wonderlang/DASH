@@ -142,9 +142,11 @@ form=x=>
     `\x1b[34m${x.body}\x1b[0m`
   :x.type=='str'?
     `\x1b[32m"${
-      (''+x.body)
-        .replace(/"/g,'\\"')
-        .replace(XRE('(?=\\S|\r)\\pC','g'),a=>`#u{${a.charCodeAt().toString(16)}}`)
+      (''+x.body).replace(/"/g,'\\"')
+    }"\x1b[0m`
+  :x.type=='istr'?
+    `\x1b[32m"${
+      x.body.map(a=>a.map?`\x1b[0m#(${a.map(form)})\x1b[32m`:a).join``.replace(/"/g,'\\"')
     }"\x1b[0m`
   :x.type=='bool'?
     `\x1b[36m${x.body?'T':'F'}\x1b[0m`
@@ -192,6 +194,8 @@ sform=x=>
     (''+x.body).replace(/Infinity/g,'oo').replace(/-/g,'_')
   :x.type=='fn'||x.type=='str'||x.type=='a'?
     ''+x.body
+  :x.type=='istr'?
+    x.body.map(a=>a.map?'#(expr)':a).join``
   :x.type=='ref'?
     sform(x.body)
   :x.type=='bool'?
@@ -714,6 +718,8 @@ I=x=>
     obj(x.body)
   :x.type=='str'?
     str(x.body)
+  :x.type=='istr'?
+    str(x.body.map(a=>a.map?sform(I(a)):a).join``)
   :x.type=='num'?
     num(x.body)
   :x.type=='var'?

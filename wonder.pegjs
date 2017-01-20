@@ -16,21 +16,21 @@ type=str/rgx/bin/oct/hex/num/bool/cond/ls/ev/obj/pm/var/comp/aapp/app/pm/def/arg
 com='#.'[^\n]*{return''}
 
 //strings
-str='"'a:([^"\\]/'\\'.)*'"'?{
+str='"'a:('#'arg/$([^"\\]/'\\'.))*'"'?{
   return{
-    type:'str',
-    body:a.map(x=>x.pop?x[1]=='"'?'"':x.join``:x).join``.replace(/\\\\/g,'\\')
+    type:'istr',
+    body:a.reduce((x,y)=>x.concat(y.map?[y[1]]:y.replace(/\\\\/g,'\\')),[])
   }
 }
-rgx='`'a:([^`\\]/'\\'.)*'`'?b:[a-zA-Z]*{
+rgx='`'a:('#'arg/$([^`\\]/'\\'.))*'`'?b:[a-zA-Z]*{
   return{
     type:'app',
     body:{
       type:'app',
       body:{type:'fn',body:'R'},
       f:{
-        type:'str',
-        body:a.map(x=>x.pop?x[1]=='"'?'"':x.join``:x).join``.replace(/\\\\/g,'\\')
+        type:'istr',
+        body:a.reduce((x,y)=>x.concat(y.map?[y[1]]:y.replace(/\\\\/g,'\\')),[])
       }
     },
     f:{
