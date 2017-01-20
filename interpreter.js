@@ -120,7 +120,7 @@ form=x=>
         .replace(/-/g,'_')
     }\x1b[0m`
   :x.type=='fn'?
-    `\x1b[34m${x.body}\x1b[0m`
+    `\x1b[34m${x.rev?'^':''}${x.body}\x1b[0m`
   :x.type=='str'?
     `\x1b[32m"${
       (''+x.body)
@@ -155,9 +155,7 @@ form=x=>
   :x.map?
     `(${x.map(form).join`;`})`
   :x.type=='pt'?
-    x.rev?
-      `(\x1b[34mtt ${x.body}\x1b[0m ${form(x.f)})`
-    :`\x1b[34m${x.body}\x1b[0m `+form(x.f)
+      `\x1b[34m${x.rev?'^':''}${x.body}\x1b[0m `+form(x.f)
   :x.type=='a'?
     `\x1b[34m#${x.body}\x1b[0m`
   :x.type=='ref'?
