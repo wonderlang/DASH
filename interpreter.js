@@ -83,26 +83,6 @@ tru=x=>(
 //Just a console.log wrapper for debugging
 O=x=>(console.log(x),x),
 
-str=x=>({
-  type:'str',
-  body:l((x+'')
-    .replace(
-      /(?:([^#])#|^#)u([\da-f]{4})/ig,
-      (a,b,c)=>(b||'')+String.fromCodePoint(`0x${c}`)
-    )
-    .replace(
-      /(?:([^#])#|^#)u{([\da-f]{0,6})}?/ig,
-      (a,b,c)=>(b||'')+String.fromCodePoint(`0x${c}`)
-    )
-    .replace(/(?:([^#])#|^#)n/ig,'$1\n')
-    .replace(/(?:([^#])#|^#)r/ig,'$1\r')
-    .replace(/(?:([^#])#|^#)t/ig,'$1\t')
-    .replace(/(?:([^#])#|^#)v/ig,'$1\v')
-    .replace(/(?:([^#])#|^#)e/ig,'$1\x1b')
-    .replace(/(?:([^#])#|^#)a/ig,'$1\x07')
-  )
-}),
-
 //Utility functions for wrapping raw data in types and converting
 //These follow the parser's convention of type wrapping
 //All types contain a type header, a body, and possibly f and g properties.
@@ -118,6 +98,7 @@ num=x=>({
         .replace(/_/g,'-')
         .replace(/oo/g,'Infinity'))
 }),
+str=x=>({type:'str',body:l((x+''))}),
 ls=x=>({type:'ls',body:l(x).map(I)}),
 obj=x=>({type:'obj',body:l(x)}),
 vr=(x,y)=>({type:'var',body:x,f:y}),
@@ -142,11 +123,20 @@ form=x=>
     `\x1b[34m${x.body}\x1b[0m`
   :x.type=='str'?
     `\x1b[32m"${
-      (''+x.body).replace(/"/g,'\\"')
+      (''+x.body)
+        .replace(/"/g,'\\"')
+        .replace(XRE('(?=\\S|\r)\\pC','g'),a=>`#u{${a.charCodeAt().toString(16)}}`)
     }"\x1b[0m`
   :x.type=='istr'?
     `\x1b[32m"${
-      x.body.map(a=>a.map?`\x1b[0m#(${a.map(form)})\x1b[32m`:a).join``.replace(/"/g,'\\"')
+      x.body
+        .map(a=>
+          a.map?
+            `\x1b[0m#(${a.map(form)})\x1b[32m`
+          :a
+            .replace(/"/g,'\\"')
+            .replace(XRE('(?=\\S|\r)\\pC','g'),a=>`#u{${a.charCodeAt().toString(16)}}`)
+        ).join``
     }"\x1b[0m`
   :x.type=='bool'?
     `\x1b[36m${x.body?'T':'F'}\x1b[0m`
@@ -719,7 +709,25 @@ I=x=>
   :x.type=='str'?
     str(x.body)
   :x.type=='istr'?
-    str(x.body.map(a=>a.map?sform(I(a)):a).join``)
+    str(
+      x.body
+        .map(a=>a.map?sform(I(a)):a)
+        .join``
+        .replace(
+          /(?:([^#])#|^#)u([\da-f]{4})/ig,
+          (a,b,c)=>(b||'')+String.fromCodePoint(`0x${c}`)
+        )
+        .replace(
+          /(?:([^#])#|^#)u{([\da-f]{0,6})}?/ig,
+          (a,b,c)=>(b||'')+String.fromCodePoint(`0x${c}`)
+        )
+        .replace(/(?:([^#])#|^#)n/ig,'$1\n')
+        .replace(/(?:([^#])#|^#)r/ig,'$1\r')
+        .replace(/(?:([^#])#|^#)t/ig,'$1\t')
+        .replace(/(?:([^#])#|^#)v/ig,'$1\v')
+        .replace(/(?:([^#])#|^#)e/ig,'$1\x1b')
+        .replace(/(?:([^#])#|^#)a/ig,'$1\x07')
+    )
   :x.type=='num'?
     num(x.body)
   :x.type=='var'?
