@@ -448,7 +448,7 @@ cm={
   ),
   gen:x=>ls(l.generate(a=>app(x,num(a)),1/0)),
   genc:(x,y)=>ls(l.generate(a=>[...Array(a)].reduce(i=>I(app(x,i)),y),1/0)),
-  rpt:x=>ls(l.repeat(x,1/0)),
+  rpt:(x,y)=>ls(l.repeat(y,1/0).take(num(x.body).body)),
   cyc:x=>ls(l.generate(a=>cm.get(num(a),x),1/0)),
 
   //combinatorics
