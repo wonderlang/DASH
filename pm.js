@@ -53,3 +53,8 @@ else if(process.argv[2]=='update'){
     console.log(`Updated package "${x}"`)
   })
 }
+
+//default: display help
+else{
+  console.log(`USAGE: delishusly [command] [args...]\n---\nCOMMANDS:\n - install [name/url]\n - uninstall [name]\n - update [name]\n`)
+}
