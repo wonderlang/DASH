@@ -25,7 +25,6 @@
     "keypress": "^0.2.1",
     "lazy.js": "^0.4.2",
     "lodash": "^4.16.4",
-    "pegjs": "^0.10.0",
     "prompt-sync": "^4.1.4",
     "prompt-sync-history": "^1.0.1",
     "sleep": "^4.0.0",

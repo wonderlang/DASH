@@ -8,7 +8,6 @@
 //Dependencies
 const fs=require('fs'),
 fg=require('flags'),
-peg=require('pegjs'),
 _=require('lodash'),
 l=require('lazy.js'),
 C=require('js-combinatorics'),
@@ -49,8 +48,7 @@ XRE.addToken(
 )
 
 //Lexer/parser
-const lex=fs.readFileSync(__dirname+'/wonder.pegjs')+'',
-parser=peg.generate(lex),
+const parser=require('./wonder.js'),
 
 //Length function
 //TODO: figure out how to make this work on ALL infinite lists
