@@ -76,7 +76,7 @@ f\ @(ol "f\ ";os f;ol ";f0");f0
 
 ∞ x ∞ Matrix:
 ```
-rpt rpt 1
+rpt oo rpt oo 1
 ```
 
 Truth Machine (enter nothing for falsy and anything for truthy):
