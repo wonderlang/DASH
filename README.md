@@ -10,7 +10,7 @@ Wonder is a general-purpose functional programming language influenced by countl
 
 For installation/docs, visit the [wiki](https://github.com/wonderlang/wonder/wiki).
 
-#Features
+# Features
 - Mostly functional, with some imperative/object-oriented structures
 - Lazily evaluated
 - Fresh syntax design
@@ -23,7 +23,7 @@ For installation/docs, visit the [wiki](https://github.com/wonderlang/wonder/wik
 - Simple package system
 - Easy installation via Node.js and NPM
 
-#Examples
+# Examples
 "Hello, world!":
 ```
 "Hello, world!"
