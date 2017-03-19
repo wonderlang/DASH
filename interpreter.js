@@ -7,7 +7,9 @@
 
 //Dependencies
 fs=require('fs')
-fg=require('flags')
+fg=require('minimist')(process.argv.slice(2),{
+  string:['e']
+})
 _=require('lodash')
 l=require('lazy.js')
 C=require('js-combinatorics')
@@ -32,9 +34,6 @@ d.config({
 })
 
 //Parsing command line flags
-fg.defineString('f')
-fg.defineString('e')
-fg.parse()
 dp=16
 tk=0
 expr=1
@@ -346,25 +345,25 @@ if(require.main!=module){
   module.exports=this
 }
 
-//reading from file with --f
-else if(F=fg.get('f')){
+//reading from string with --e
+else if(E=fg.e){
+  try{
+    ps=parser.parse(E)
+    out=ps&&ps.length?I(ps):[]
+    expr&&console.log('\n'+form(out))
+  }catch(e){
+    error(ERR(e),halt)
+  }
+}
+
+//reading from file
+else if(F=fg._[0]){
   try{
     const code=fs.readFileSync(F)+'',
     ps=parser.parse(code)
     out=ps&&ps.length?I(ps):[]
     expr&&console.log('\n'+form(out))
     console.log('')
-  }catch(e){
-    error(ERR(e),halt)
-  }
-}
-
-//reading from string with --e
-else if(E=fg.get('e')){
-  try{
-    ps=parser.parse(E)
-    out=ps&&ps.length?I(ps):[]
-    expr&&console.log('\n'+form(out))
   }catch(e){
     error(ERR(e),halt)
   }
