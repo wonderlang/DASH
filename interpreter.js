@@ -6,18 +6,18 @@
 //TIP: Having a comprehensive syntax highlighter will help a LOT.
 
 //Dependencies
-const fs=require('fs'),
-fg=require('flags'),
-_=require('lodash'),
-l=require('lazy.js'),
-C=require('js-combinatorics'),
-d=require('decimal.js'),
-tr=require('traverse'),
-P=require('path'),
-slp=require('sleep'),
-prompt=require('prompt-sync')({sigint:true}),
-Exec=require('child_process').execSync,
-key=require('keypress'),
+fs=require('fs')
+fg=require('flags')
+_=require('lodash')
+l=require('lazy.js')
+C=require('js-combinatorics')
+d=require('decimal.js')
+tr=require('traverse')
+P=require('path')
+slp=require('sleep')
+prompt=require('prompt-sync')({sigint:true})
+Exec=require('child_process').execSync
+key=require('keypress')
 XRE=require('xregexp')
 eval(''+fs.readFileSync('cm.js'))
 eval(''+fs.readFileSync('vs.js'))
@@ -50,7 +50,7 @@ XRE.addToken(
 )
 
 //Lexer/parser
-const parser=require('./wonder.js'),
+parser=require('./wonder.js')
 
 //Length function
 //TODO: figure out how to make this work on ALL infinite lists
@@ -61,7 +61,7 @@ len=x=>{
   catch(e){
     return x.body.size()
   }
-},
+}
 
 //Boolean type conversion
 tru=x=>(
@@ -78,10 +78,10 @@ tru=x=>(
         x.body
       :1
   }
-),
+)
 
 //Just a console.log wrapper for debugging
-O=x=>(console.log(x),x),
+O=x=>(console.log(x),x)
 
 //Utility functions for wrapping raw data in types and converting
 //These follow the parser's convention of type wrapping
@@ -97,18 +97,18 @@ num=x=>({
       :(''+d(''+x))
         .replace(/_/g,'-')
         .replace(/oo/g,'Infinity'))
-}),
-str=x=>({type:'str',body:l((x+''))}),
-ls=x=>({type:'ls',body:l(x).map(I)}),
-obj=x=>({type:'obj',body:l(x)}),
-vr=(x,y)=>({type:'var',body:x,f:y}),
-app=(x,y)=>({type:'app',body:x,f:y}),
+})
+str=x=>({type:'str',body:l((x+''))})
+ls=x=>({type:'ls',body:l(x).map(I)})
+obj=x=>({type:'obj',body:l(x)})
+vr=(x,y)=>({type:'var',body:x,f:y})
+app=(x,y)=>({type:'app',body:x,f:y})
 pt=(x,y,z)=>({type:'pt',body:x,f:y,rev:z})
-def=x=>({type:'def',body:x}),
-fn=x=>({type:'fn',body:x}),
-a=x=>({type:'a',body:0|x}),
-rgx=x=>x.type=='rgx'?x.body:XRE(x.body),
-pm=x=>({type:'pm',body:x}),
+def=x=>({type:'def',body:x})
+fn=x=>({type:'fn',body:x})
+a=x=>({type:'a',body:0|x})
+rgx=x=>x.type=='rgx'?x.body:XRE(x.body)
+pm=x=>({type:'pm',body:x})
 
 //Source formatting function, with syntax highlighting
 //Should be updated to account for all types/changes to type behaviors
@@ -174,7 +174,7 @@ form=x=>
     `.{${
       x.body.map(a=>a[0]!='@'&&form(a[0])+'\\'+form(a[1])).filter(a=>a).join`;`
     };${form(x.body.find(a=>a[0]=='@')[1])}}`
-  :error('failed to format JSON\n'+JSON.stringify(x),halt),
+  :error('failed to format JSON\n'+JSON.stringify(x),halt)
 
 //String formatting function
 sform=x=>
@@ -208,7 +208,7 @@ sform=x=>
     `(ev ${sform(x.f)} ${sform(x.g)})`
   :x.type=='pm'?
     `{pm}`
-  :error('failed to format JSON\n'+JSON.stringify(x),halt),
+  :error('failed to format JSON\n'+JSON.stringify(x),halt)
 
 //Package reading function, reads directly from the wpm folder in the CWD.
 pkg=x=>{
@@ -225,7 +225,7 @@ pkg=x=>{
 const error=(e,f)=>{
   console.log('\x1b[31mERROR:\x1b[0m '+e)
   f&&process.exit()
-},
+}
 
 //getting error type
 ERR=e=>
@@ -240,7 +240,7 @@ ERR=e=>
     `failed to execute "${e.stack.match`Command failed: (.+)`[1]}"`
   :e.stack.match`Backreference to undefined`?
     `backreference to ${e.stack.match`Backreference to undefined group (.+)`[1]} not found`
-  :'js error -> '+e.stack,
+  :'js error -> '+e.stack
 
 //WARNING: The code following this comment will be quite messy. Good luck!
 
@@ -257,14 +257,14 @@ ua=(x,y)=>(X=tr(x),X.map(function(a){
       )
     :a.body>D?(a.body--,a):a
   )
-})),
+}))
 
 //substitution inside evaluation blocks
 Ua=(x,y,z)=>tr(x).map(function(a){
   a.type=='ev'&&a.f.body==y.body?
     this.update(Ua(I(a),y,z))
   :(a.type=='fn'||a.type=='ref')&&a.body==y.body&&this.update(z)
-}),
+})
 
 //the core evaluation function
 I=x=>
