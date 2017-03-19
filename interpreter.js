@@ -19,8 +19,8 @@ prompt=require('prompt-sync')({sigint:true})
 Exec=require('child_process').execSync
 key=require('keypress')
 XRE=require('xregexp')
-eval(''+fs.readFileSync('cm.js'))
-eval(''+fs.readFileSync('vs.js'))
+eval(''+fs.readFileSync(__dirname+'/cm.js'))
+eval(''+fs.readFileSync(__dirname+'/vs.js'))
 
 //This defines default number behavior
 d.config({
