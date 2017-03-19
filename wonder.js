@@ -2654,19 +2654,25 @@ function peg$parse(input, options) {
         s4 = peg$parse_();
       }
       if (s3 !== peg$FAILED) {
-        s4 = peg$parsefn();
+        s4 = peg$parsetfn();
         if (s4 === peg$FAILED) {
-          s4 = peg$parsearg();
+          s4 = peg$parseufn();
           if (s4 === peg$FAILED) {
-            s4 = peg$parsels();
+            s4 = peg$parsefn();
             if (s4 === peg$FAILED) {
-              s4 = peg$parsedef();
+              s4 = peg$parsearg();
               if (s4 === peg$FAILED) {
-                s4 = peg$parseobj();
+                s4 = peg$parsels();
                 if (s4 === peg$FAILED) {
-                  s4 = peg$parsepm();
+                  s4 = peg$parsedef();
                   if (s4 === peg$FAILED) {
-                    s4 = peg$parsergx();
+                    s4 = peg$parseobj();
+                    if (s4 === peg$FAILED) {
+                      s4 = peg$parsepm();
+                      if (s4 === peg$FAILED) {
+                        s4 = peg$parsergx();
+                      }
+                    }
                   }
                 }
               }

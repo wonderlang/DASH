@@ -111,7 +111,7 @@ a=a:('#'_*[0-9]+){
     body:+a[2].join``
   }
 }
-ref=a:('#'_*(fn/arg/ls/def/obj/pm/rgx)){
+ref=a:('#'_*(tfn/ufn/fn/arg/ls/def/obj/pm/rgx)){
   return{
     type:'ref',
     body:a[2]
