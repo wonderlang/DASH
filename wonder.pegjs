@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=str/rgx/bin/oct/hex/num/bool/cond/ls/ev/obj/pm/var/comp/aapp/app/pm/def/arg/ufn/tfn/fn/a/ref
+type=str/rgx/bin/oct/hex/num/bool/cond/ls/ev/obj/pm/var/comp/aapp/app/pm/def/arg/utfn/ufn/tfn/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -133,7 +133,7 @@ app=a:(tfn/fn/def)_*b:type{
     f:b
   }
 }
-aapp=a:(ufn/app/arg)_*b:type{
+aapp=a:(utfn/ufn/app/arg)_*b:type{
   return{
     type:'app',
     body:a,
@@ -153,8 +153,15 @@ tfn="^"a:fn{
     rev:1
   }
 }
+utfn=("^'"/"'^")a:fn{
+  return{
+    type:'fn',
+    body:a.body,
+    rev:1
+  }
+}
 
-comp=a:(ufn/tfn/aapp/app/fn/def/arg/ls/obj/pm/rgx)_*b:('.'_*(ufn/tfn/aapp/app/fn/def/arg/ls/obj/pm/rgx)_*)+{
+comp=a:(utfn/ufn/tfn/aapp/app/fn/def/arg/ls/obj/pm/rgx)_*b:('.'_*(ufn/tfn/aapp/app/fn/def/arg/ls/obj/pm/rgx)_*)+{
   return{
     type:'app',
     body:{type:'fn',body:'ss'},
