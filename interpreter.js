@@ -17,7 +17,6 @@ d=require('decimal.js')
 tr=require('traverse')
 P=require('path')
 slp=require('sleep')
-prompt=require('prompt-sync')({sigint:true})
 Exec=require('child_process').execSync
 key=require('keypress')
 XRE=require('xregexp')
