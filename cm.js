@@ -7,7 +7,7 @@
 //More info can be found on the Github wiki's page on cm functions.
 cm={
   //input
-  rl:x=>str(Exec('read x;echo $x',{stdio[process.stdin]})),
+  rl:x=>str(Exec('read x;echo $x',{stdio:[process.stdin]})),
   rf:x=>str(fs.readFileSync(x.body+'')+''),
 
   //output
