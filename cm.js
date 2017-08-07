@@ -5,6 +5,7 @@
 //If you want to add other functions, be sure to at least *try* to notice some
 //of the structures that I use (esp. for type checking/conversion).
 //More info can be found on the Github wiki's page on cm functions.
+
 cm={
   //input
   rl:x=>str(Exec('read x;echo $x',{stdio:[process.stdin]})),
