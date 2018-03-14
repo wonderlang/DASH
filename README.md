@@ -19,7 +19,7 @@ For installation/docs, visit the [wiki](https://github.com/wonderlang/wonder/wik
 - Code as data
 - Pattern matching support
 - Mainly prefix-based
-- Float support for up to 1000-digit precision
+- Arbitrary decimal precision support (note that trig functions are limited to 1000 digits of precision)
 - Simple package system
 - Easy installation via Node.js and NPM
 
