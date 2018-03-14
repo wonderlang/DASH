@@ -142,11 +142,7 @@ form=x=>
     `${x.body?'T':'F'}`
   :x.type=='ls'?
     `[${
-      tk?
-        x.body.take?
-          x.body.take(tk).map(form).join(';')+(x.body.get(tk+1)?';...':'')
-        :x.body.map(form).join(';')
-      :'ls'
+      x.body.map(form).join(';')
     }]`
   :x.type=='obj'?
     `{${l(x.body).map((a,b)=>'"'+b+'"\\'+form(a)).value().join`;`}}`
@@ -191,6 +187,8 @@ sform=x=>
         :a
           .replace(XRE('(?=\\S|\r)\\pC','g'),a=>`#u{${a.charCodeAt().toString(16)}}`)
       ).join``
+  :x.type=='ls'?
+    x.body.map(form).join(';')
   :form(x)
 
 //Package reading function, reads directly from the wpm folder in the CWD.
