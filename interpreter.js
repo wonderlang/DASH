@@ -29,7 +29,7 @@ d.config({
   toExpPos:9e15,
   crypto:true,
   modulo:d.EUCLID,
-  precision:1e9
+  precision:16
 })
 
 //Parsing command line flags
@@ -94,7 +94,7 @@ num=x=>({
         x.charAt?
           ''+l(x).map(a=>a.codePointAt()).sum()
         :''+len(ls(x))
-      :(''+d(''+x).toDP(dp))
+      :(''+d(''+x))
         .replace(/_/g,'-')
         .replace(/oo/g,'Infinity'))
 })

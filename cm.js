@@ -34,7 +34,7 @@ cm={
   bn:x=>str(d(''+num(x.body).body).toBinary()),
   ot:x=>str(d(''+num(x.body).body).toOctal()),
   //precision and rounding
-  E:x=>(dp=0|num(x.body).body,x),
+  E:x=>(d.precision=0|num(x.body).body,x),
   fix:(x,y)=>str(d(''+num(x.body).body).toFixed(0|num(y.body).body)),
   rnd:x=>num(0|num(x.body).body?d.random(0|num(x.body).body):''+0|d.random()*2),
   flr:x=>num(d.floor(''+num(x.body).body)),
