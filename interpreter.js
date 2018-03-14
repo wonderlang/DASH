@@ -114,32 +114,32 @@ pm=x=>({type:'pm',body:x})
 //Should be updated to account for all types/changes to type behaviors
 form=x=>
   x.type=='num'?
-    `\x1b[33m${
+    `${
       (''+x.body)
         .replace(/Infinity/g,'oo')
         .replace(/-/g,'_')
-    }\x1b[0m`
+    }`
   :x.type=='fn'?
-    `\x1b[34m${x.rev?'^':''}${x.body}\x1b[0m`
+    `${x.rev?'^':''}${x.body}`
   :x.type=='str'?
-    `\x1b[32m"${
+    `"${
       (''+x.body)
         .replace(/"/g,'\\"')
         .replace(XRE('(?=\\S|\r)\\pC','g'),a=>`#u{${a.charCodeAt().toString(16)}}`)
-    }"\x1b[0m`
+    }"`
   :x.type=='istr'?
-    `\x1b[32m"${
+    `"${
       x.body
         .map(a=>
           a.map?
-            `\x1b[0m#(${a.map(form)})\x1b[32m`
+            `#(${a.map(form)})`
           :a
             .replace(/"/g,'\\"')
             .replace(XRE('(?=\\S|\r)\\pC','g'),a=>`#u{${a.charCodeAt().toString(16)}}`)
         ).join``
-    }"\x1b[0m`
+    }"`
   :x.type=='bool'?
-    `\x1b[36m${x.body?'T':'F'}\x1b[0m`
+    `${x.body?'T':'F'}`
   :x.type=='ls'?
     `[${
       tk?
@@ -149,17 +149,17 @@ form=x=>
       :'ls'
     }]`
   :x.type=='obj'?
-    `{${l(x.body).map((a,b)=>'\x1b[32m"'+b+'"\x1b[0m\\'+form(a)).value().join`;`}}`
+    `{${l(x.body).map((a,b)=>'"'+b+'"\\'+form(a)).value().join`;`}}`
   :x.type=='def'?
-    `\x1b[92m@${form(x.body)}\x1b[0m`
+    `@${form(x.body)}`
   :x.map?
     `(${x.map(form).join`;`})`
   :x.type=='pt'?
-      `\x1b[34m${x.rev?'^':''}${x.body}\x1b[0m `+form(x.f)
+      `${x.rev?'^':''}${x.body} `+form(x.f)
   :x.type=='a'?
-    `\x1b[34m#${x.body}\x1b[0m`
+    `#${x.body}`
   :x.type=='ref'?
-    `\x1b[34m#\x1b[0m(${form(x.body)})`
+    `#(${form(x.body)})`
   :x.type=='app'?
     form(x.body)+' '+form(x.f)
   :x.type=='var'?
@@ -167,7 +167,7 @@ form=x=>
   :x.type=='cond'?
     `[${form(x.body)}?${form(x.f)}?${form(x.g)}]`
   :x.type=='rgx'?
-    `\x1b[37m\`${x.body.source}\`${x.body.flags}\x1b[0m`
+    `\`${x.body.source}\`${x.body.flags}`
   :x.type=='ev'?
     `(${x.body.map(form).join`;`})${form(x.f)}\\${form(x.g)}`
   :x.type=='pm'?
@@ -178,37 +178,20 @@ form=x=>
 
 //String formatting function
 sform=x=>
-  x.type=='num'?
-    (''+x.body).replace(/Infinity/g,'oo').replace(/-/g,'_')
-  :x.type=='fn'||x.type=='str'||x.type=='a'?
-    ''+x.body
+  x.type=='fn'?
+    `${x.rev?'^':''}${x.body}`
+  :x.type=='str'?
+    (''+x.body)
+      .replace(XRE('(?=\\S|\r)\\pC','g'),a=>`#u{${a.charCodeAt().toString(16)}}`)
   :x.type=='istr'?
-    x.body.map(a=>a.map?'#(expr)':a).join``
-  :x.type=='ref'?
-    sform(x.body)
-  :x.type=='bool'?
-    x.body?'T':'F'
-  :x.type=='ls'?
-    `[ls]`
-  :x.type=='obj'?
-    `{obj ${x.body.keys().size()}}`
-  :x.type=='def'?
-    `@(expr)`
-  :x.map?
-    `(expr)`
-  :x.type=='app'?
-    sform(x.body)+' '+sform(x.f)
-  :x.type=='pt'?
-    x.body+' '+sform(x.f)
-  :x.type=='cond'?
-    '[cond]'
-  :x.type=='rgx'?
-    '`rgx`'
-  :x.type=='ev'?
-    `(ev ${sform(x.f)} ${sform(x.g)})`
-  :x.type=='pm'?
-    `{pm}`
-  :error('failed to format JSON\n'+JSON.stringify(x),halt)
+    x.body
+      .map(a=>
+        a.map?
+          `#(${a.map(sform)})`
+        :a
+          .replace(XRE('(?=\\S|\r)\\pC','g'),a=>`#u{${a.charCodeAt().toString(16)}}`)
+      ).join``
+  :form(x)
 
 //Package reading function, reads directly from the wpm folder in the CWD.
 pkg=x=>{
@@ -349,7 +332,7 @@ else if(E=fg.e){
   try{
     ps=parser.parse(E)
     out=ps&&ps.length?I(ps):[]
-    expr&&console.log('\n'+form(out))
+    expr&&console.log('\n\x1b[32m--- RESULT ---\x1b[0m\n'+form(out))
   }catch(e){
     error(ERR(e),halt)
   }
@@ -361,7 +344,7 @@ else if(F=fg._[0]){
     const code=fs.readFileSync(F)+'',
     ps=parser.parse(code)
     out=ps&&ps.length?I(ps):[]
-    expr&&console.log('\n'+form(out))
+    expr&&console.log('\n\x1b[32m--- RESULT ---\x1b[0m\n'+form(out))
     console.log('')
   }catch(e){
     error(ERR(e),halt)
