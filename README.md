@@ -71,7 +71,7 @@ FizzBuzz:
 
 Quine (run with `--noexpr` flag):
 ```
-f\ @++ ++ "f\ " #(f) ";f0";f0
+f\ @(++ ++ "f\ " f) ";f0";f0
 ```
 
 ∞ x ∞ Matrix:
