@@ -370,7 +370,7 @@ cm={
   S:(x,y)=>I(app(x,y)),
   K:(x,y)=>x,
   I:x=>x,
-  tt:x=>(x.rev=x.rev!=[]._?!x.rev:1,x),
+  tt:x=>(x.rev=!x.rev,x),
   ss:(x,y)=>x.body.reduceRight((a,b)=>I(app(b,a)),y),
   sS:(x,y)=>y.body.reduce((a,b)=>I(app(a,b)),x)
 };

@@ -192,7 +192,7 @@ sform=x=>
   :form(x)
 
 //Package reading function, reads directly from the wpm folder in the CWD.
-pkg=x=>{
+pkg=(x,f)=>{
   try{
     f=fs.readFileSync((`wpm/${x}/`+fs.readFileSync(`wpm/${x}/pkg`)).replace(/\s/g,''))+''
   }
@@ -205,7 +205,7 @@ pkg=x=>{
 //error message displaying
 const error=(e,f)=>{
   console.log('\x1b[31mERROR:\x1b[0m '+e)
-  f&&process.exit()
+  f&&process.exit(1)
 }
 
 //getting error type
@@ -226,7 +226,7 @@ ERR=e=>
 //WARNING: The code following this comment will be quite messy. Good luck!
 
 //de Bruijn indices substitution
-ua=(x,y)=>(X=tr(x),X.map(function(a){
+ua=(x,y,X,gX)=>(X=tr(x),X.map(function(a){
   a.type=='a'&&(
     a.body==(D=this.path.filter(($,i,j)=>(gX=X.get(j.slice(0,i+1)))&&gX.type=='def').length)?
       this.update(
@@ -248,7 +248,7 @@ Ua=(x,y,z)=>tr(x).map(function(a){
 })
 
 //the core evaluation function
-I=x=>
+I=(x,z)=>
   !x||(x.type=='num'&&x.body=='NaN')||(x.pop&&!x.length)?
     tru(0)
   :x.type=='cond'?
