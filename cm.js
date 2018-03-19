@@ -355,7 +355,7 @@ cm={
 
   //flow
   type:x=>str(x.type),
-  var:(x,y)=>vs[x.body]?vs[x.body]:(vs[x.body]=y),
+  var:(x,y)=>(vs[x.body]=y),
   while:(x,y)=>(
     [X,Y]=[x.body.get(0),x.body.get(1)],
     tru(I(app(X,y))).body?cm.while(x,I(app(Y,y))):y
