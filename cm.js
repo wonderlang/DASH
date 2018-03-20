@@ -15,8 +15,8 @@ cm={
   //Using the form and sform functions are important here
   eX:x=>(expr=tru(x).body,x),
   os:x=>(process.stdout.write(form(x).replace(/\x1b\[\d+m/g,'')),x),
-  ol:x=>(process.stdout.write(sform(x)),x),
-  oN:x=>(process.stdout.write(sform(x)+'\n'),x),
+  ol:x=>(process.stdout.write(x.type=='ls'?x.body.map(sform).join(''):sform(x)),x),
+  oN:x=>(process.stdout.write((x.type=='ls'?x.body.map(sform).join('\n'):sform(x))+'\n'),x),
   wf:(x,y)=>(fs.writeFileSync(''+x.body,sform(y)),y),
 
   //num
