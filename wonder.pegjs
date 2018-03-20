@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=str/rgx/bin/oct/hex/num/bool/cond/ls/ev/obj/pm/var/comp/aapp/app/pm/def/arg/utfn/ufn/tfn/fn/a/ref
+type=str/rgx/bin/oct/hex/num/bool/cond/ls/ev/obj/pm/defn/var/comp/aapp/app/pm/def/arg/utfn/ufn/tfn/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -204,5 +204,20 @@ ev=a:arg _*b:var{
     body:a.filter(x=>!x.big),
     f:b.body,
     g:b.f
+  }
+}
+//lambda w/ named arg
+defn=a:fn _*'\\\\'_*b:type{
+  return{
+    type:'def',
+    body:{
+      type:'ev',
+      body:[].concat(b),
+      f:a,
+      g:{
+        type:'a',
+        body:0
+      }
+    }
   }
 }

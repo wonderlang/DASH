@@ -155,7 +155,7 @@ form=x=>
   :x.type=='a'?
     `#${x.body}`
   :x.type=='ref'?
-    `#(${form(x.body)})`
+    `#${x.body.type=='fn'||x.body.map?form(x.body):`(${form(x.body)})`}`
   :x.type=='app'?
     form(x.body)+' '+form(x.f)
   :x.type=='var'?
