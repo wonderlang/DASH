@@ -9,7 +9,11 @@
 fs=require('fs')
 fg=require('minimist')(process.argv.slice(2),{
   string:['e','tk'],
-  boolean:['expr']
+  boolean:['expr'],
+  default:{
+    tk:500,
+    expr:true
+  }
 })
 _=require('lodash')
 l=require('lazy.js')
@@ -35,8 +39,8 @@ d.config({
 
 //Parsing command line flags
 dp=16
-tk=+fg.tk||500
-expr=fg.expr==[]._?1:fg.expr
+tk=+fg.tk
+expr=fg.expr
 
 //Custom tokens
 XRE.addToken(
