@@ -8,7 +8,8 @@
 //Dependencies
 fs=require('fs')
 fg=require('minimist')(process.argv.slice(2),{
-  string:['e','tk']
+  string:['e','tk'],
+  boolean:['expr']
 })
 _=require('lodash')
 l=require('lazy.js')
@@ -35,7 +36,7 @@ d.config({
 //Parsing command line flags
 dp=16
 tk=+fg.tk||500
-expr=1
+expr=fg.expr==[]._?1:fg.expr
 
 //Custom tokens
 XRE.addToken(
