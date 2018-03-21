@@ -8,7 +8,7 @@
 //Dependencies
 fs=require('fs')
 fg=require('minimist')(process.argv.slice(2),{
-  string:['e']
+  string:['e','tk']
 })
 _=require('lodash')
 l=require('lazy.js')
@@ -34,7 +34,7 @@ d.config({
 
 //Parsing command line flags
 dp=16
-tk=0
+tk=+fg.tk||500
 expr=1
 
 //Custom tokens
@@ -112,7 +112,7 @@ pm=x=>({type:'pm',body:x})
 
 //Source formatting function, with syntax highlighting
 //Should be updated to account for all types/changes to type behaviors
-form=x=>
+form=(x,X)=>
   x.type=='num'?
     `${
       (''+x.body)
@@ -142,8 +142,8 @@ form=x=>
     `${x.body?'T':'F'}`
   :x.type=='ls'?
     `[${
-      x.body.map(form).join(';')
-    }]`
+      (X=x.body.map(form),X.take(tk).join(';'))
+    }${X.get(tk)!=[]._?';...':''}]`
   :x.type=='obj'?
     `{${l(x.body).map((a,b)=>'"'+b+'"\\'+form(a)).value().join`;`}}`
   :x.type=='def'?
