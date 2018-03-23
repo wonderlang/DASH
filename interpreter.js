@@ -197,7 +197,7 @@ sform=x=>
           .replace(XRE('(?=\\S|\r)\\pC','g'),a=>`#u{${a.charCodeAt().toString(16)}}`)
       ).join``
   :x.type=='ls'?
-    x.body.map(sform).join(' ')
+    x.body.map(sform).join('')
   :form(x)
 
 //Package reading function, reads directly from the wpm folder in the CWD.
