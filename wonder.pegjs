@@ -188,7 +188,7 @@ var=a:fn _*'\\'_*b:type{
 }
 
 //conditionals
-cond='['_*a:type _*'?'_*b:expr*_*'?'_*c:expr*_*']'?{
+cond='('_*a:type _*'?'_*b:expr*_*'?'_*c:expr*_*')'?{
   return{
   	type:'cond',
     body:a,
