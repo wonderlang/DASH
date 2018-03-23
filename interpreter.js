@@ -173,8 +173,12 @@ form=(x,X)=>
     `(${x.body.map(form).join`;`})${form(x.f)}\\${form(x.g)}`
   :x.type=='pm'?
     `.{${
-      x.body.map(a=>a[0]!='@'&&form(a[0])+'\\'+form(a[1])).filter(a=>a).join`;`
-    };${form(x.body.find(a=>a[0]=='@')[1])}}`
+      x.body.map(a=>
+        a[0]=='@'?
+          form(a[1])
+        :form(a[0])+'\\'+form(a[1])
+      ).join(';')
+    }}`
   :error('failed to format JSON\n'+JSON.stringify(x),halt)
 
 //String formatting function
@@ -298,6 +302,8 @@ I=(x,z)=>
     vs[x.body].call?
       vs[x.body]()
     :vs[x.body]
+  :x.type=='pm'?
+    pm(x.body.map(a=>[I(a[0]),a[1]]))
   :x.type=='app'?
     (z=I(x.body)).type=='fn'?
       cm[z.body]?
@@ -311,7 +317,7 @@ I=(x,z)=>
       z.rev?cm[I(z).body](I(x.f),z.f):cm[I(z).body](z.f,I(x.f))
     :z.type=='pm'?
       I(app(
-        (X=z.body.find(a=>!a[0].type),Y=z.body.find(a=>a[0].type&&cm.eq(a[0],I(x.f)).body))?
+        (X=z.body.find(a=>a=='@'),Y=z.body.find(a=>a[0].type&&cm.eq(a[0],I(x.f)).body))?
           Y[1]
         :X[1],
       I(x.f)))
