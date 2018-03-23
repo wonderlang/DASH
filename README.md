@@ -53,19 +53,19 @@ FizzBuzz:
 ```
 (join "
 ") (map @
-  [
+  (
     and % #0 3 % #0 5
       ? #0
-      ? (con [
+      ? (con (
           % #0 3
             ? ""
             ? "fizz"
-        ]) [
+        )) (
           % #0 5
             ? ""
             ? "buzz"
-        ]
-  ]
+        )
+  )
 ) rng 1 101
 ```
 
@@ -81,11 +81,11 @@ rpt oo rpt oo 1
 
 Truth Machine (enter nothing for falsy and anything for truthy):
 ```
-t\ @[
+t\ @(
   #0
     ? t ol 1
     ? 0
-];
+);
 t rl ()
 ```
 You can find some PPCG.SE Wonder submissions [here](http://codegolf.stackexchange.com/search?q=wonder+url%3A%22https%3A%2F%2Fgithub.com%2Fwonderlang%2Fwonder%22+is%3Aanswer).
