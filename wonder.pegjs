@@ -222,11 +222,15 @@ defn=a:fn _*'\\\\'_*b:type{
   }
 }
 //list comprehension
-lsc='['_*a:type _*'?'_*b:var _*';'?_*c:type? _*']'?{
-  return{
+lsc='['_*a:type _*'?'_*b:(var _*';'?_*)+c:type? _*']'?{
+  return b.reverse().reduce((x,y,z,w)=>(w={
   	type:'lsc',
-    body:a,
-    f:b,
-    g:c
-  }
+    body:x,
+    f:y[0],
+    g:z?{type:'bool',body:1}:c||{type:'bool',body:1}
+  },z?{
+  	type:'app',
+    body:{type:'fn',body:'flat'},
+    f:w
+  }:w),a)
 }
