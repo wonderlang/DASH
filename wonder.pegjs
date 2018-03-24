@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=str/rgx/bin/oct/hex/num/bool/cond/ls/ev/obj/pm/defn/var/comp/aapp/app/pm/def/arg/utfn/ufn/tfn/fn/a/ref
+type=str/rgx/bin/oct/hex/num/bool/cond/lsc/ls/ev/obj/pm/defn/var/comp/aapp/app/pm/def/arg/utfn/ufn/tfn/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -111,7 +111,7 @@ a=a:('#'_*[0-9]+){
     body:+a[2].join``
   }
 }
-ref=a:('#'_*(tfn/ufn/fn/arg/ls/def/obj/pm/rgx)){
+ref=a:('#'_*(tfn/ufn/fn/arg/lsc/ls/def/obj/pm/rgx)){
   return{
     type:'ref',
     body:a[2]
@@ -161,7 +161,7 @@ utfn=("^'"/"'^")a:fn{
   }
 }
 
-comp=a:(utfn/ufn/tfn/aapp/app/fn/def/arg/ls/obj/pm/rgx)_*b:('.'_*(ufn/tfn/aapp/app/fn/def/arg/ls/obj/pm/rgx)_*)+{
+comp=a:(utfn/ufn/tfn/aapp/app/fn/def/arg/lsc/ls/obj/pm/rgx)_*b:('.'_*(ufn/tfn/aapp/app/fn/def/arg/ls/obj/pm/rgx)_*)+{
   return{
     type:'app',
     body:{type:'fn',body:'ss'},
@@ -219,5 +219,14 @@ defn=a:fn _*'\\\\'_*b:type{
         body:0
       }
     }
+  }
+}
+//list comprehension
+lsc='['_*a:type _*'?'_*b:var _*';'?_*c:type? _*']'?{
+  return{
+  	type:'lsc',
+    body:a,
+    f:b,
+    g:c
   }
 }

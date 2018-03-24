@@ -111,9 +111,10 @@ app=(x,y)=>({type:'app',body:x,f:y})
 pt=(x,y,z)=>({type:'pt',body:x,f:y,rev:z})
 def=x=>({type:'def',body:x})
 fn=x=>({type:'fn',body:x})
-a=x=>({type:'a',body:0|x})
+A=x=>({type:'a',body:0|x})
 rgx=x=>x.type=='rgx'?x.body:XRE(x.body)
 pm=x=>({type:'pm',body:x})
+ev=(x,y,z)=>({type:'ev',body:x,f:y,g:z})
 
 //Source formatting function, with syntax highlighting
 //Should be updated to account for all types/changes to type behaviors
@@ -147,8 +148,10 @@ form=(x,X)=>
     `${x.body?'T':'F'}`
   :x.type=='ls'?
     `[${
-      (X=x.body.map(form),X.take(tk).join(';'))
-    }${X.get(tk)!=[]._?';...':''}]`
+      (X=x.body.map(form),X.take?X.take(tk).join(';'):X.join(';'))
+    }${(X.get?X.get(tk):X[tk])!=[]._?';...':''}]`
+  :x.type=='lsc'?
+    `[${form(x.body)}?${form(x.f)}${x.g?';'+form(x.g):''}]`
   :x.type=='obj'?
     `{${l(x.body).map((a,b)=>'"'+b+'"\\'+form(a)).value().join`;`}}`
   :x.type=='def'?
@@ -235,7 +238,7 @@ ERR=e=>
 //WARNING: The code following this comment will be quite messy. Good luck!
 
 //de Bruijn indices substitution
-ua=(x,y,X,gX)=>(X=tr(x),X.map(function(a){
+ua=(x,y,X,gX,D)=>(X=tr(x),X.map(function(a){
   a.type=='a'&&(
     a.body==(D=this.path.filter(($,i,j)=>(gX=X.get(j.slice(0,i+1)))&&gX.type=='def').length)?
       this.update(
@@ -304,6 +307,8 @@ I=(x,z)=>
     :vs[x.body]
   :x.type=='pm'?
     pm(x.body.map(a=>[I(a[0]),a[1]]))
+  :x.type=='lsc'?
+    cm.map(def(ev(x.body,x.f.body,A(0))),x.g?cm.fltr(I(def(ev(x.g,x.f.body,A(0)))),I(x.f.f)):I(x.f.f))
   :x.type=='app'?
     (z=I(x.body)).type=='fn'?
       cm[z.body]?
