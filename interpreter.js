@@ -151,7 +151,7 @@ form=(x,X)=>
       (X=x.body.map(form),X.take?X.take(tk).join(';'):X.join(';'))
     }${(X.get?X.get(tk):X[tk])!=[]._?';...':''}]`
   :x.type=='lsc'?
-    `[${form(x.body)}?${form(x.f)}${x.g?';'+form(x.g):''}]`
+    `[${form(x.body)}?${form(x.f)};${form(x.g)}]`
   :x.type=='obj'?
     `{${l(x.body).map((a,b)=>'"'+b+'"\\'+form(a)).value().join`;`}}`
   :x.type=='def'?
@@ -308,7 +308,7 @@ I=(x,z)=>
   :x.type=='pm'?
     pm(x.body.map(a=>[I(a[0]),a[1]]))
   :x.type=='lsc'?
-    cm.map(def(ev(x.body,x.f.body,A(0))),x.g?cm.fltr(I(def(ev(x.g,x.f.body,A(0)))),I(x.f.f)):I(x.f.f))
+    cm.map(def(ev(x.body,x.f.body,A(0))),cm.fltr(I(def(ev(x.g,x.f.body,A(0)))),I(x.f.f)))
   :x.type=='app'?
     (z=I(x.body)).type=='fn'?
       cm[z.body]?
