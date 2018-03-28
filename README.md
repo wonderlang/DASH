@@ -34,12 +34,12 @@ Recursive Fibonacci sequence:
 f\ 0\\0;
 f\ 1\\1;
 f\\\ x\\(+ f - #x 1) f - #x 2;
-map #f rng 1 10
+f 10 #. Usage example
 ```
 
 Alternative Fibonacci sequence:
 ```
-tk 100 (genc round . * #phi) 1
+oN tk 100 (genc round . * #phi) 1
 ```
 
 FizzBuzz:
@@ -67,7 +67,7 @@ f\ @ol ["f\ ";f;";f0"];f0
 
 ∞ x ∞ Matrix:
 ```
-rpt oo rpt oo 1
+os rpt oo rpt oo 1
 ```
 
 Truth Machine (enter nothing for falsy and anything for truthy):
