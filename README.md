@@ -29,44 +29,35 @@ For installation/docs, visit the [wiki](https://github.com/wonderlang/wonder/wik
 "Hello, world!"
 ```
 
-Recursive Fibonacci sequence with memoization:
+Recursive Fibonacci sequence:
 ```
-f\ .{
-  0\ 0;
-  1\ 1;
-  @(
-    f\ set #[#0 x] f;
-    x
-  )x\ (+ f - #0 1) f - #0 2
-};
-map #f rng 1 50
+f\ 0\\0;
+f\ 1\\1;
+f\\\ x\\(+ f - #x 1) f - #x 2;
+map #f rng 1 10
 ```
 
 Alternative Fibonacci sequence:
 ```
-tk 100 (genc@
-  round * #phi #0
-) 1
+tk 100 (genc round . * #phi) 1
 ```
 
 FizzBuzz:
 ```
-(join "
-") (map @
-  (
-    and % #0 3 % #0 5
-      ? #0
-      ? (con (
-          % #0 3
+oN 
+  (map x\\(
+    and % #x 3 % #x 5
+      ? #x
+      ? (++ (
+          % #x 3
             ? ""
             ? "fizz"
         )) (
-          % #0 5
+          % #x 5
             ? ""
             ? "buzz"
         )
-  )
-) rng 1 101
+  )) rng 1 101
 ```
 
 Quine (run with `--noexpr` flag):
@@ -81,11 +72,9 @@ rpt oo rpt oo 1
 
 Truth Machine (enter nothing for falsy and anything for truthy):
 ```
-t\ @(
-  #0
-    ? t ol 1
-    ? 0
-);
-t rl ()
+t\ 0\\ol 0;
+t\ 1\\t ol 1;
+a\ rl ();
+t get 0 a
 ```
 You can find some PPCG.SE Wonder submissions [here](http://codegolf.stackexchange.com/search?q=wonder+url%3A%22https%3A%2F%2Fgithub.com%2Fwonderlang%2Fwonder%22+is%3Aanswer).

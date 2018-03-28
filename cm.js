@@ -165,10 +165,10 @@ cm={
   set:(x,y)=>
     y.type=='pm'?
       pm(
-        y.body.find(a=>a[0]!='@'&&cm.eq(x.body.get(0),a[0]).body)?
-          y.body.map(a=>a[0]!='@'&&cm.eq(x.body.get(0),a[0]).body?[x.body.get(0),x.body.get(1)]:a)
+        y.body.find(a=>cm.eq(x.body.get(0),a[0]).body)?
+          y.body.map(a=>cm.eq(x.body.get(0),a[0]).body?[x.body.get(0),x.body.get(1)]:a)
         :y.body.concat([[x.body.get(0),x.body.get(1)]])
-      )
+      ,y.f)
     :y.type=='obj'?
       (X={},X[x.body.get(0).body]=x.body.get(1),obj(y.body.assign(X)))
     :ls(y.body.map(a=>y.type=='str'?str(a):a).map((a,b)=>

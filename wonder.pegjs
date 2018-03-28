@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=str/rgx/bin/oct/hex/num/bool/cond/lsc/ls/ev/obj/pm/defn/var/comp/aapp/app/pm/def/arg/utfn/ufn/tfn/fn/a/ref
+type=str/rgx/bin/oct/hex/num/bool/cond/lsc/ls/ev/obj/pm/defn/pmv/var/comp/aapp/app/pm/def/arg/utfn/ufn/tfn/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -96,8 +96,17 @@ pm='.{'_*a:(type _*'\\'_*type _*';'?_*)*b:type? _*'}'?{
   return{
     type:'pm',
     body:(
-      a.map(x=>[x[0],x[4]]).concat([['@',b||{type:'bool',body:0}]])
-    )
+      a.map(x=>[x[0],x[4]])
+    ),
+    f:b||{type:'bool',body:0}
+  }
+}
+pmv=a:fn _*'\\'_*b:type? _*'\\\\'_*c:type{
+  return{
+  	type:'pmv',
+    body:a.body,
+    f:b,
+    g:c
   }
 }
 //expression list (holds multiple expressions)
@@ -223,7 +232,7 @@ defn=a:fn _*'\\\\'_*b:type{
 }
 //list comprehension
 lsc='['_*a:type _*'?'_*b:(var _*';'?_*)+c:type? _*']'?{
-  return b.reverse().reduce((x,y,z,w)=>(w={
+  return b.reduce((x,y,z,w)=>(w={
   	type:'lsc',
     body:x,
     f:y[0],

@@ -113,7 +113,7 @@ def=x=>({type:'def',body:x})
 fn=x=>({type:'fn',body:x})
 A=x=>({type:'a',body:0|x})
 rgx=x=>x.type=='rgx'?x.body:XRE(x.body)
-pm=x=>({type:'pm',body:x})
+pm=(x,y)=>({type:'pm',body:x,f:y})
 ev=(x,y,z)=>({type:'ev',body:x,f:y,g:z})
 
 //Source formatting function, with syntax highlighting
@@ -177,11 +177,11 @@ form=(x,X)=>
   :x.type=='pm'?
     `.{${
       x.body.map(a=>
-        a[0]=='@'?
-          form(a[1])
-        :form(a[0])+'\\'+form(a[1])
-      ).join(';')
-    }}`
+        form(a[0])+'\\'+form(a[1])+';'
+      ).join('')
+    }${form(x.f)}}`
+  :x.type=='pmv'?
+    `${x.body}\\${form(x.f)}\\\\${form(x.g)}`
   :error('failed to format JSON\n'+JSON.stringify(x),halt)
 
 //String formatting function
@@ -306,7 +306,14 @@ I=(x,z)=>
       vs[x.body]()
     :vs[x.body]
   :x.type=='pm'?
-    pm(x.body.map(a=>[I(a[0]),a[1]]))
+    pm(x.body.map(a=>[I(a[0]),a[1]]),I(x.f))
+  :x.type=='pmv'?
+    (
+      vs[x.body]=vs[x.body]||pm([],tru(0)),
+      vs[x.body]=vs[x.body].type=='pm'?
+        x.f?pm(vs[x.body].body.concat([[I(x.f),x.g]]),I(vs[x.body].f)):pm(vs[x.body].body,I(x.g))
+      :vs[x.body]
+    )
   :x.type=='lsc'?
     cm.map(def(ev(x.body,x.f.body,A(0))),cm.fltr(I(def(ev(x.g,x.f.body,A(0)))),I(x.f.f)))
   :x.type=='app'?
@@ -322,9 +329,9 @@ I=(x,z)=>
       z.rev?cm[I(z).body](I(x.f),z.f):cm[I(z).body](z.f,I(x.f))
     :z.type=='pm'?
       I(app(
-        (X=z.body.find(a=>a=='@'),Y=z.body.find(a=>a[0].type&&cm.eq(a[0],I(x.f)).body))?
+        (Y=z.body.find(a=>cm.eq(a[0],I(x.f)).body))?
           Y[1]
-        :X[1],
+        :z.f,
       I(x.f)))
     :z.type=='ls'||z.type=='obj'?
       cm.get(I(x.f),z)
