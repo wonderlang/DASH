@@ -37,6 +37,17 @@ f\\\ x\\(+ f - #x 1) f - #x 2;
 f 10 #. Usage example
 ```
 
+Recursive Fibonacci sequence with memoization:
+```
+f\ 0\\0;
+f\ 1\\1;
+f\\\ x\\(
+  f\#x\\#y;
+  #y
+) y\ (+ f - #x 1) f - #x 2;
+oN map #f rng 1 50
+```
+
 Alternative Fibonacci sequence:
 ```
 oN tk 100 (genc round . * #phi) 1

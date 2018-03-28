@@ -306,12 +306,14 @@ I=(x,z)=>
       vs[x.body]()
     :vs[x.body]
   :x.type=='pm'?
-    pm(x.body.map(a=>[I(a[0]),a[1]]),I(x.f))
+    pm(x.body.map(a=>[I(a[0]),I(a[1])]),I(x.f))
   :x.type=='pmv'?
     (
       vs[x.body]=vs[x.body]||pm([],tru(0)),
       vs[x.body]=vs[x.body].type=='pm'?
-        x.f?pm(vs[x.body].body.concat([[I(x.f),x.g]]),I(vs[x.body].f)):pm(vs[x.body].body,I(x.g))
+        x.f?
+          pm(vs[x.body].body.concat([[I(x.f),I(x.g)]]),I(vs[x.body].f))
+        :pm(vs[x.body].body,I(x.g))
       :vs[x.body]
     )
   :x.type=='lsc'?
