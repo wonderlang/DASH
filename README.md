@@ -75,8 +75,8 @@ os rpt oo rpt oo 1
 
 Truth Machine (enter nothing for falsy and anything for truthy):
 ```
-t\ 0\\ol 0;
-t\ 1\\t ol 1;
+t\ 0\\@ol 0;
+t\ 1\\@t ol 1;
 a\ rl ();
 t get 0 a
 ```
