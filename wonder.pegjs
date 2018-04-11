@@ -92,21 +92,22 @@ obj='{'_*a:((num/fn/str)_*'\\'_*type _*';'?_*)*_*'}'?{
     body:(a.map(x=>o[x[0].body]=x[4]),o)
   }
 }
-pm='.{'_*a:(type _*'\\'_*type _*';'?_*)*b:type? _*'}'?{
+pm='.{'_*a:(type _*('\\'/'?')_*type _*';'?_*)*b:type? _*'}'?{
   return{
     type:'pm',
     body:(
-      a.map(x=>[x[0],x[4]])
+      a.map(x=>[x[0],x[4],x[2]=='?'])
     ),
     f:b||{type:'bool',body:0}
   }
 }
-pmv=a:fn _*'\\'_*b:type? _*'\\\\'_*c:type{
+pmv=a:fn _*'\\'_*b:type? _*d:('\\\\'/'?')_*c:type{
   return{
   	type:'pmv',
     body:a.body,
     f:b,
-    g:c
+    g:c,
+    h:d=='?'
   }
 }
 //expression list (holds multiple expressions)
@@ -142,7 +143,7 @@ app=a:(tfn/fn/def)_*b:type{
     f:b
   }
 }
-aapp=a:(utfn/ufn/app/arg)_*b:type{
+aapp=a:(utfn/ufn/app/arg/pm)_*b:type{
   return{
     type:'app',
     body:a,

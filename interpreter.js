@@ -177,11 +177,11 @@ form=(x,X)=>
   :x.type=='pm'?
     `.{${
       x.body.map(a=>
-        form(a[0])+'\\'+form(a[1])+';'
+        form(a[0])+(a[2]?'?':'\\')+form(a[1])+';'
       ).join('')
     }${form(x.f)}}`
   :x.type=='pmv'?
-    `${x.body}\\${form(x.f)}\\\\${form(x.g)}`
+    `${x.body}\\${x.f?form(x.f):''}${x.h?'?':'\\\\'}${form(x.g)}`
   :error('failed to format JSON\n'+JSON.stringify(x),halt)
 
 //String formatting function
@@ -306,13 +306,13 @@ I=(x,z)=>
       vs[x.body]()
     :vs[x.body]
   :x.type=='pm'?
-    pm(x.body.map(a=>[I(a[0]),I(a[1])]),I(x.f))
+    pm(x.body.map(a=>[I(a[0]),I(a[1]),a[2]]),I(x.f))
   :x.type=='pmv'?
     (
       vs[x.body]=vs[x.body]||pm([],tru(0)),
       vs[x.body]=vs[x.body].type=='pm'?
         x.f?
-          pm(vs[x.body].body.concat([[I(x.f),I(x.g)]]),I(vs[x.body].f))
+          pm(vs[x.body].body.concat([[I(x.f),I(x.g),x.h]]),I(vs[x.body].f))
         :pm(vs[x.body].body,I(x.g))
       :vs[x.body]
     )
@@ -331,7 +331,13 @@ I=(x,z)=>
       z.rev?cm[I(z).body](I(x.f),z.f):cm[I(z).body](z.f,I(x.f))
     :z.type=='pm'?
       I(app(
-        (Y=z.body.find(a=>cm.eq(a[0],I(x.f)).body))?
+        (
+          Y=z.body.find(a=>
+            a[2]?
+              tru(I(app(a[0],I(x.f)))).body
+            :cm.eq(I(a[0]),I(x.f)).body
+          )
+        )?
           Y[1]
         :z.f,
       I(x.f)))
