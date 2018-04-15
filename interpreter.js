@@ -163,8 +163,6 @@ form=(x,X)=>
       `${x.rev?'^':''}${x.body} `+form(x.f)
   :x.type=='a'?
     `#${x.body}`
-  :x.type=='ref'?
-    `#${x.body.type=='fn'||x.body.map?form(x.body):`(${form(x.body)})`}`
   :x.type=='app'?
     form(x.body)+' '+form(x.f)
   :x.type=='var'?
@@ -178,7 +176,7 @@ form=(x,X)=>
   :x.type=='pm'?
     `.{${
       x.body.map(a=>
-        form(a[0])+(a[2]?'?':'\\')+form(a[1])+';'
+        form(a[0])+'?'+form(a[1])+';'
       ).join('')
     }${form(x.f)}}`
   :x.type=='pmv'?
@@ -257,7 +255,7 @@ ua=(x,y,X,gX,D)=>(X=tr(x),X.map(function(a){
 Ua=(x,y,z)=>tr(x).map(function(a){
   a.type=='ev'&&a.f.body==y.body?
     this.update(Ua(I(a),y,z))
-  :(a.type=='fn'||a.type=='ref')&&a.body==y.body&&this.update(z)
+  :a.type=='fn'&&a.body==y.body&&this.update(z)
 })
 
 //the core evaluation function
@@ -300,20 +298,18 @@ I=(x,z)=>
     num(x.body)
   :x.type=='var'?
     (vs[x.body.body]=I(x.f))
-  :x.type=='ref'?
-    I(x.body)
   :x.type=='fn'&&vs[x.body]?
     vs[x.body].call?
       vs[x.body]()
     :vs[x.body]
   :x.type=='pm'?
-    pm(x.body.map(a=>[I(a[0]),a[1],a[2]]),I(x.f))
+    pm(x.body.map(a=>[I(a[0]),a[1]]),I(x.f))
   :x.type=='pmv'?
     (
       vs[x.body]=vs[x.body]||pm([],tru(0)),
       vs[x.body]=vs[x.body].type=='pm'?
         x.f?
-          pm(vs[x.body].body.concat([[I(x.f),x.g,x.h]]),I(vs[x.body].f))
+          pm(vs[x.body].body.concat([[I(x.f),x.g]]),I(vs[x.body].f))
         :pm(vs[x.body].body,I(x.g))
       :vs[x.body]
     )
@@ -344,13 +340,7 @@ I=(x,z)=>
       z.rev?cm[I(z).body](I(x.f),z.f):cm[I(z).body](z.f,I(x.f))
     :z.type=='pm'?
       I(app(
-        (
-          Y=z.body.find(a=>
-            a[2]?
-              tru(I(app(a[0],I(x.f)))).body
-            :cm.eq(I(a[0]),I(x.f)).body
-          )
-        )?
+        (Y=z.body.find(a=>cm.eq(I(a[0]),I(x.f)).body))?
           Y[1]
         :z.f,
       I(x.f)))

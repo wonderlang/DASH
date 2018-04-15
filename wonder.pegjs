@@ -10,7 +10,7 @@ expr=a:(_/type)';'?{
 _=[ \n]
 
 //types
-type=str/rgx/bin/oct/hex/num/bool/cond/lsc/ls/ev/obj/pm/defn/pmv/var/comp/aapp/app/pm/def/arg/utfn/ufn/tfn/fn/a/ref
+type=str/rgx/bin/oct/hex/num/bool/cond/lsc/ls/ev/obj/defn/pmv/var/comp/aapp/app/pm/def/arg/utfn/ufn/tfn/fn/a/ref
 
 //comments
 com='#.'[^\n]*{return''}
@@ -106,13 +106,12 @@ pm='.{'_*a:(type _*('\\'/'?')_*type _*';'?_*)*b:type? _*'}'?{
     f:b||{type:'bool',body:0}
   }
 }
-pmv=a:fn _*b:(type/'..') _*'\\'d:'?'?_*c:type{
+pmv=a:fn _*b:(type/'..') _*'\\'_*c:type{
   return{
   	type:'pmv',
     body:a.body,
     f:b=='..'?null:b,
-    g:c,
-    h:d=='?'
+    g:c
   }
 }
 //expression list (holds multiple expressions)
@@ -126,11 +125,8 @@ a=a:('#'_*[0-9]+){
     body:+a[2].join``
   }
 }
-ref=a:('#'_*(tfn/ufn/fn/arg/lsc/ls/def/obj/pm/rgx)){
-  return{
-    type:'ref',
-    body:a[2]
-  }
+ref=a:('#'_*(rgx/defn/pm/def/arg/utfn/ufn/tfn/fn/ref)){
+  return a[2]
 }
 
 //function reference
@@ -148,7 +144,7 @@ app=a:(tfn/fn/def)_*b:type{
     f:b
   }
 }
-aapp=a:(utfn/ufn/app/arg/pm)_*b:type{
+aapp=a:(utfn/ufn/pm/app/arg)_*b:type{
   return{
     type:'app',
     body:a,
@@ -176,7 +172,7 @@ utfn=("^'"/"'^")a:fn{
   }
 }
 
-comp=a:(utfn/ufn/tfn/aapp/app/fn/def/arg/lsc/ls/obj/pm/rgx)_*b:('.'_*(ufn/tfn/aapp/app/fn/def/arg/ls/obj/pm/rgx)_*)+{
+comp=a:(utfn/ufn/tfn/aapp/app/fn/def/arg/lsc/ls/obj/pm/rgx)_*b:('.'_*(ufn/tfn/aapp/app/fn/def/arg/lsc/ls/obj/pm/rgx)_*)+{
   return{
     type:'app',
     body:{type:'fn',body:'ss'},
