@@ -115,6 +115,7 @@ A=x=>({type:'a',body:0|x})
 rgx=x=>x.type=='rgx'?x.body:XRE(x.body)
 pm=(x,y)=>({type:'pm',body:x,f:y})
 ev=(x,y,z)=>({type:'ev',body:x,f:y,g:z})
+defn=(x,y)=>def(ev(y,x,A(0)))
 
 //Source formatting function, with syntax highlighting
 //Should be updated to account for all types/changes to type behaviors
@@ -266,7 +267,7 @@ I=(x,z)=>
   :x.type=='cond'?
     tru(I(x.body)).body?I(x.f):I(x.g)
   :x.type=='ev'?
-    I(Ua(x.body,x.f,x.g))
+    I(Ua(x.body,x.f,I(x.g)))
   :x.map?
     (X=x.map(a=>I(a)))[X.length-1]
   :x.type=='ls'?
@@ -306,18 +307,30 @@ I=(x,z)=>
       vs[x.body]()
     :vs[x.body]
   :x.type=='pm'?
-    pm(x.body.map(a=>[I(a[0]),I(a[1]),a[2]]),I(x.f))
+    pm(x.body.map(a=>[I(a[0]),a[1],a[2]]),I(x.f))
   :x.type=='pmv'?
     (
       vs[x.body]=vs[x.body]||pm([],tru(0)),
       vs[x.body]=vs[x.body].type=='pm'?
         x.f?
-          pm(vs[x.body].body.concat([[I(x.f),I(x.g),x.h]]),I(vs[x.body].f))
+          pm(vs[x.body].body.concat([[I(x.f),x.g,x.h]]),I(vs[x.body].f))
         :pm(vs[x.body].body,I(x.g))
       :vs[x.body]
     )
   :x.type=='lsc'?
-    cm.map(def(ev(x.body,x.f.body,A(0))),cm.fltr(I(def(ev(x.g,x.f.body,A(0)))),I(x.f.f)))
+    I(app(
+      app(
+        fn('map'),
+        defn(x.f.body,x.body,A(0))
+      ),
+      app(
+        app(
+          fn('fltr'),
+          defn(x.f.body,x.g,A(0))
+        )
+        ,x.f.f
+      )
+    ))
   :x.type=='app'?
     (z=I(x.body)).type=='fn'?
       cm[z.body]?

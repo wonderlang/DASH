@@ -78,11 +78,16 @@ bool=a:[TF]{
 }
 
 //list
-ls='['a:expr*']'?{
-  return{
-    type:'ls',
-    body:a.filter(x=>!x.big)
-  }
+ls='['a:('..'?expr)*']'?{
+  return a.reduce((x,y)=>y[1].big?x:{
+  	type:'app',
+    body:{
+   	  type:'app',
+      body:{type:'fn',body:'++'},
+      f:x
+    },
+    f:y[0]?y[1]:{type:'ls',body:[y[1]]}
+  },{type:'ls',body:[]})
 }
 //object
 obj='{'_*a:((num/fn/str)_*'\\'_*type _*';'?_*)*_*'}'?{
@@ -101,11 +106,11 @@ pm='.{'_*a:(type _*('\\'/'?')_*type _*';'?_*)*b:type? _*'}'?{
     f:b||{type:'bool',body:0}
   }
 }
-pmv=a:fn _*'\\'_*b:type? _*d:('\\\\'/'?')_*c:type{
+pmv=a:fn _*b:(type/'..') _*'\\'d:'?'?_*c:type{
   return{
   	type:'pmv',
     body:a.body,
-    f:b,
+    f:b=='..'?null:b,
     g:c,
     h:d=='?'
   }

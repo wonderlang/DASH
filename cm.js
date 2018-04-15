@@ -135,8 +135,8 @@ cm={
   //map family
   //y.body.charAt?str(a):a converts any iterable type to a list
   map:(x,y)=>ls(y.body.map(a=>I(app(x,y.body.charAt?str(a):a)))),
-  fold:(x,y)=>y.body.reduce((a,b)=>I(app(app(x.body.get(0),b),y.body.charAt?str(a):a)),x.body.get(1)),
-  foldr:(x,y)=>y.body.reduceRight((a,b)=>I(app(app(x.body.get(0),b),y.body.charAt?str(a):a)),x.body.get(1)),
+  fold:(x,y)=>y.body.reduce((a,b)=>I(app(app(x.body.get(0),y.body.charAt?str(a):a),b)),x.body.get(1)),
+  foldr:(x,y)=>y.body.reduceRight((a,b)=>I(app(app(x.body.get(0),y.body.charAt?str(a):a),b)),x.body.get(1)),
   tkwl:(x,y)=>ls(y.body.takeWhile(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   drwl:(x,y)=>ls(y.body.dropWhile(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   fltr:(x,y)=>ls(y.body.filter(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),

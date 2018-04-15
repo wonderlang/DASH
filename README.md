@@ -31,21 +31,21 @@ For installation/docs, visit the [wiki](https://github.com/wonderlang/wonder/wik
 
 Recursive Fibonacci sequence:
 ```
-f\ 0\\0;
-f\ 1\\1;
-f\\\ x\\(+ f - #x 1) f - #x 2;
+f 0\0;
+f 1\1;
+f..\x\\(+ f - #x 1) f - #x 2;
 f 10 #. Usage example
 ```
 
 Recursive Fibonacci sequence with memoization:
 ```
-f\ 0\\0;
-f\ 1\\1;
-f\\\ x\\(
-  f\#x\\#y;
+f 0\0;
+f 1\1;
+f..\x\\(
+  f #x\#y;
   #y
 ) y\ (+ f - #x 1) f - #x 2;
-oN map #f rng 1 50
+oN map #f rng 1 50 #. Usage example
 ```
 
 Alternative Fibonacci sequence:
@@ -65,7 +65,7 @@ oN
 
 Quine (run with `--noexpr` flag):
 ```
-f\ @ol ["f\ ";f;";f0"];f0
+f\ @ol "f\ #(f);f0";f0
 ```
 
 ∞ x ∞ Matrix:
@@ -75,9 +75,9 @@ os rpt oo rpt oo 1
 
 Truth Machine (enter nothing for falsy and anything for truthy):
 ```
-t\ 0\\@ol 0;
-t\ 1\\@t ol 1;
-a\ rl ();
-t get 0 a
+t 0\ol 0;
+t 1\t ol 1;
+a\get 0 rl ();
+t #a
 ```
 You can find some PPCG.SE Wonder submissions [here](http://codegolf.stackexchange.com/search?q=wonder+url%3A%22https%3A%2F%2Fgithub.com%2Fwonderlang%2Fwonder%22+is%3Aanswer).
