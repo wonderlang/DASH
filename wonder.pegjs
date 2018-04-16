@@ -41,28 +41,24 @@ rgx='`'a:('#'arg/$([^`\\]/'\\'.))*'`'?b:[a-zA-Z]*{
 }
 //numbers
 num=a:$('_'?[0-9]+('.'[0-9]+)?('e''_'?[0-9]+)?/'_'?'.'[0-9]+('e''_'?[0-9]+)?/'_'?'oo'){
-  var f
   return{
     type:'num',
     body:a!='oo'?a.replace(/_/g,'-'):a!='_oo'?'Infinity':'-Infinity'
   }
 }
 bin=a:$('_'?'0b'([01]+('.'[01]+)?/'.'[01]+)){
-  var f
   return{
     type:'num',
     body:a.replace(/_/g,'-')
   }
 }
 oct=a:$('_'?'0o'([0-8]+('.'[0-8]+)?/'.'[0-8]+)){
-  var f
   return{
     type:'num',
     body:a.replace(/_/g,'-')
   }
 }
 hex=a:$('_'?'0x'([0-9A-Fa-f]+('.'[0-9A-Fa-f]+)?/'.'[0-9A-Fa-f]+)){
-  var f
   return{
     type:'num',
     body:a.replace(/_/g,'-')
@@ -70,8 +66,8 @@ hex=a:$('_'?'0x'([0-9A-Fa-f]+('.'[0-9A-Fa-f]+)?/'.'[0-9A-Fa-f]+)){
 }
 
 //bool
-bool=a:[TF]{
-  return{
+bool=a:[TFU]{
+  return a=='U'?{type:'u'}:{
     type:'bool',
     body:+(a=='T')
   }
@@ -130,7 +126,7 @@ ref=a:('#'_*(rgx/defn/pm/def/arg/utfn/ufn/tfn/fn/ref)){
 }
 
 //function reference
-fn=a:[^ \n;0-9".[\]\\(){}@#TF?`]+{
+fn=a:[^ \n;0-9".[\]\\(){}@#TFU?`]+{
   return{
     type:'fn',
     body:a.join``

@@ -116,6 +116,7 @@ rgx=x=>x.type=='rgx'?x.body:XRE(x.body)
 pm=(x,y)=>({type:'pm',body:x,f:y})
 ev=(x,y,z)=>({type:'ev',body:x,f:y,g:z})
 defn=(x,y)=>def(ev(y,x,A(0)))
+undef=x=>({type:'u'})
 
 //Source formatting function, with syntax highlighting
 //Should be updated to account for all types/changes to type behaviors
@@ -181,6 +182,8 @@ form=(x,X)=>
     }${form(x.f)}}`
   :x.type=='pmv'?
     `${x.body}\\${x.f?form(x.f):''}${x.h?'?':'\\\\'}${form(x.g)}`
+  :x.type=='u'?
+    `U`
   :error('failed to format JSON\n'+JSON.stringify(x),halt)
 
 //String formatting function
@@ -261,7 +264,7 @@ Ua=(x,y,z)=>tr(x).map(function(a){
 //the core evaluation function
 I=(x,z)=>
   !x||(x.type=='num'&&x.body=='NaN')||(x.pop&&!x.length)?
-    tru(0)
+    undef()
   :x.type=='cond'?
     tru(I(x.body)).body?I(x.f):I(x.g)
   :x.type=='ev'?
@@ -303,7 +306,7 @@ I=(x,z)=>
       vs[x.body]()
     :vs[x.body]
   :x.type=='pm'?
-    pm(x.body.map(a=>[I(a[0]),a[1]]),I(x.f))
+    pm(x.body.map(a=>[I(a[0]),a[1]]),x.f)
   :x.type=='pmv'?
     (
       vs[x.body]=vs[x.body]||pm([],tru(0)),
@@ -345,7 +348,7 @@ I=(x,z)=>
         :z.f,
       I(x.f)))
     :z.type=='ls'||z.type=='obj'?
-      cm.get(I(x.f),z)
+      cm.iget(I(x.f),z)
     :z.type=='rgx'?
       cm.mstr(z,I(x.f))
     :z

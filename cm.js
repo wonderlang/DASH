@@ -117,7 +117,7 @@ cm={
     )==form(
       y.type=='obj'?obj(y.body.sort().toObject()):y
     )||
-      (x.body.charAt&&y.body.charAt&&
+      (x.body&&y.body&&x.body.charAt&&y.body.charAt&&
         ''+num(x.body).body==''+num(y.body).body
       )
   ),
@@ -140,7 +140,7 @@ cm={
   tkwl:(x,y)=>ls(y.body.takeWhile(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   drwl:(x,y)=>ls(y.body.dropWhile(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   fltr:(x,y)=>ls(y.body.filter(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
-  find:(x,y)=>y.body.find(a=>tru(I(app(x,y.body.charAt?str(a):a))).body),
+  find:(x,y)=>y.body.find(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)||undef(),
   findi:(x,y)=>y.body.map((a,b)=>tru(I(app(x,y.body.charAt?str(a):a))).body?num(b):0).find(a=>a)||tru(0),
   every:(x,y)=>tru(y.body.every(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
   some:(x,y)=>tru(y.body.some(a=>tru(I(app(x,y.body.charAt?str(a):a))).body)),
@@ -156,12 +156,12 @@ cm={
     :y.type=='obj'?
       y.body.get(''+x.body)
     :y.body.map(a=>a.charAt?str(a):a).get(0|d.mod(0|num(x.body).body,len(y)))
-  )||tru(0)),
+  )||undef()),
   iget:(x,y)=>I((
     y.type=='obj'?
       y.body.get(''+x.body)
     :y.body.map(a=>a.charAt?str(a):a).get(0|num(x.body).body)
-  )||tru(0)),
+  )||undef()),
   set:(x,y)=>
     y.type=='pm'?
       pm(

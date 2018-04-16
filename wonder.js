@@ -205,7 +205,6 @@ function peg$parse(input, options) {
       peg$c36 = "oo",
       peg$c37 = peg$literalExpectation("oo", false),
       peg$c38 = function(a) {
-        var f
         return{
           type:'num',
           body:a!='oo'?a.replace(/_/g,'-'):a!='_oo'?'Infinity':'-Infinity'
@@ -216,7 +215,6 @@ function peg$parse(input, options) {
       peg$c41 = /^[01]/,
       peg$c42 = peg$classExpectation(["0", "1"], false, false),
       peg$c43 = function(a) {
-        var f
         return{
           type:'num',
           body:a.replace(/_/g,'-')
@@ -230,10 +228,10 @@ function peg$parse(input, options) {
       peg$c49 = peg$literalExpectation("0x", false),
       peg$c50 = /^[0-9A-Fa-f]/,
       peg$c51 = peg$classExpectation([["0", "9"], ["A", "F"], ["a", "f"]], false, false),
-      peg$c52 = /^[TF]/,
-      peg$c53 = peg$classExpectation(["T", "F"], false, false),
+      peg$c52 = /^[TFU]/,
+      peg$c53 = peg$classExpectation(["T", "F", "U"], false, false),
       peg$c54 = function(a) {
-        return{
+        return a=='U'?{type:'u'}:{
           type:'bool',
           body:+(a=='T')
         }
@@ -298,13 +296,10 @@ function peg$parse(input, options) {
         }
       },
       peg$c78 = function(a) {
-        return{
-          type:'ref',
-          body:a[2]
-        }
+        return a[2]
       },
-      peg$c79 = /^[^ \n;0-9".[\]\\(){}@#TF?`]/,
-      peg$c80 = peg$classExpectation([" ", "\n", ";", ["0", "9"], "\"", ".", "[", "]", "\\", "(", ")", "{", "}", "@", "#", "T", "F", "?", "`"], true, false),
+      peg$c79 = /^[^ \n;0-9".[\]\\(){}@#TFU?`]/,
+      peg$c80 = peg$classExpectation([" ", "\n", ";", ["0", "9"], "\"", ".", "[", "]", "\\", "(", ")", "{", "}", "@", "#", "T", "F", "U", "?", "`"], true, false),
       peg$c81 = function(a) {
         return{
           type:'fn',
@@ -653,38 +648,35 @@ function peg$parse(input, options) {
                         if (s0 === peg$FAILED) {
                           s0 = peg$parseobj();
                           if (s0 === peg$FAILED) {
-                            s0 = peg$parsepm();
+                            s0 = peg$parsedefn();
                             if (s0 === peg$FAILED) {
-                              s0 = peg$parsedefn();
+                              s0 = peg$parsepmv();
                               if (s0 === peg$FAILED) {
-                                s0 = peg$parsepmv();
+                                s0 = peg$parsevar();
                                 if (s0 === peg$FAILED) {
-                                  s0 = peg$parsevar();
+                                  s0 = peg$parsecomp();
                                   if (s0 === peg$FAILED) {
-                                    s0 = peg$parsecomp();
+                                    s0 = peg$parseaapp();
                                     if (s0 === peg$FAILED) {
-                                      s0 = peg$parseaapp();
+                                      s0 = peg$parseapp();
                                       if (s0 === peg$FAILED) {
-                                        s0 = peg$parseapp();
+                                        s0 = peg$parsepm();
                                         if (s0 === peg$FAILED) {
-                                          s0 = peg$parsepm();
+                                          s0 = peg$parsedef();
                                           if (s0 === peg$FAILED) {
-                                            s0 = peg$parsedef();
+                                            s0 = peg$parsearg();
                                             if (s0 === peg$FAILED) {
-                                              s0 = peg$parsearg();
+                                              s0 = peg$parseutfn();
                                               if (s0 === peg$FAILED) {
-                                                s0 = peg$parseutfn();
+                                                s0 = peg$parseufn();
                                                 if (s0 === peg$FAILED) {
-                                                  s0 = peg$parseufn();
+                                                  s0 = peg$parsetfn();
                                                   if (s0 === peg$FAILED) {
-                                                    s0 = peg$parsetfn();
+                                                    s0 = peg$parsefn();
                                                     if (s0 === peg$FAILED) {
-                                                      s0 = peg$parsefn();
+                                                      s0 = peg$parsea();
                                                       if (s0 === peg$FAILED) {
-                                                        s0 = peg$parsea();
-                                                        if (s0 === peg$FAILED) {
-                                                          s0 = peg$parseref();
-                                                        }
+                                                        s0 = peg$parseref();
                                                       }
                                                     }
                                                   }
@@ -2861,25 +2853,25 @@ function peg$parse(input, options) {
         s4 = peg$parse_();
       }
       if (s3 !== peg$FAILED) {
-        s4 = peg$parsetfn();
+        s4 = peg$parsergx();
         if (s4 === peg$FAILED) {
-          s4 = peg$parseufn();
+          s4 = peg$parsedefn();
           if (s4 === peg$FAILED) {
-            s4 = peg$parsefn();
+            s4 = peg$parsepm();
             if (s4 === peg$FAILED) {
-              s4 = peg$parsearg();
+              s4 = peg$parsedef();
               if (s4 === peg$FAILED) {
-                s4 = peg$parselsc();
+                s4 = peg$parsearg();
                 if (s4 === peg$FAILED) {
-                  s4 = peg$parsels();
+                  s4 = peg$parseutfn();
                   if (s4 === peg$FAILED) {
-                    s4 = peg$parsedef();
+                    s4 = peg$parseufn();
                     if (s4 === peg$FAILED) {
-                      s4 = peg$parseobj();
+                      s4 = peg$parsetfn();
                       if (s4 === peg$FAILED) {
-                        s4 = peg$parsepm();
+                        s4 = peg$parsefn();
                         if (s4 === peg$FAILED) {
-                          s4 = peg$parsergx();
+                          s4 = peg$parseref();
                         }
                       }
                     }
@@ -2996,11 +2988,11 @@ function peg$parse(input, options) {
     if (s1 === peg$FAILED) {
       s1 = peg$parseufn();
       if (s1 === peg$FAILED) {
-        s1 = peg$parseapp();
+        s1 = peg$parsepm();
         if (s1 === peg$FAILED) {
-          s1 = peg$parsearg();
+          s1 = peg$parseapp();
           if (s1 === peg$FAILED) {
-            s1 = peg$parsepm();
+            s1 = peg$parsearg();
           }
         }
       }
@@ -3210,13 +3202,16 @@ function peg$parse(input, options) {
                       if (s7 === peg$FAILED) {
                         s7 = peg$parsearg();
                         if (s7 === peg$FAILED) {
-                          s7 = peg$parsels();
+                          s7 = peg$parselsc();
                           if (s7 === peg$FAILED) {
-                            s7 = peg$parseobj();
+                            s7 = peg$parsels();
                             if (s7 === peg$FAILED) {
-                              s7 = peg$parsepm();
+                              s7 = peg$parseobj();
                               if (s7 === peg$FAILED) {
-                                s7 = peg$parsergx();
+                                s7 = peg$parsepm();
+                                if (s7 === peg$FAILED) {
+                                  s7 = peg$parsergx();
+                                }
                               }
                             }
                           }
@@ -3286,13 +3281,16 @@ function peg$parse(input, options) {
                           if (s7 === peg$FAILED) {
                             s7 = peg$parsearg();
                             if (s7 === peg$FAILED) {
-                              s7 = peg$parsels();
+                              s7 = peg$parselsc();
                               if (s7 === peg$FAILED) {
-                                s7 = peg$parseobj();
+                                s7 = peg$parsels();
                                 if (s7 === peg$FAILED) {
-                                  s7 = peg$parsepm();
+                                  s7 = peg$parseobj();
                                   if (s7 === peg$FAILED) {
-                                    s7 = peg$parsergx();
+                                    s7 = peg$parsepm();
+                                    if (s7 === peg$FAILED) {
+                                      s7 = peg$parsergx();
+                                    }
                                   }
                                 }
                               }
