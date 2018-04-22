@@ -208,6 +208,8 @@ cm={
         str(sform(x)+sform(y))
       :obj(Object.assign(x.body.value(),y.body.map(a=>y.body.charAt?str(a):a).value()))
     :cm.flat(ls([x,y])),
+  cons:(x,y,O)=>
+    cm.flat(ls([x,y])),
   iO:(x,y)=>ls(y.body.map((a,b)=>cm.eq(y.body.charAt?str(a):a,x).body?num(b):0).filter(a=>a)),
   fiO:(x,y)=>y.body.map((a,b)=>cm.eq(y.body.charAt?str(a):a,x).body?num(b):0).find(a=>a)||tru(0),
   rev:x=>ls(x.body.map(a=>x.body.charAt?str(a):a).reverse()),
@@ -284,7 +286,7 @@ cm={
   flat:x=>ls(
     x.body.map(a=>x.body.charAt?str(a):a.type=='ls'?a.body:a).flatten()
   ),
-  zip:(x,y)=>cm.map(I(app(fn('sS'),x)),cm.tsp(y)),
+  zip:(x,y)=>cm.map(app(fn('sS'),x),cm.tsp(y)),
   cns:(x,y)=>ls(
     y.body.map(a=>y.body.charAt?str(a):a)
       .consecutive(0|num(x.body).body)
@@ -415,6 +417,7 @@ cm={
   ['><','join'],
   ['<>','split'],
   ['++','con'],
+  ['::','cons'],
   ['$$','eval'],
   ['%%','sleep'],
   ['<|>','chunk'],

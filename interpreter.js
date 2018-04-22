@@ -69,21 +69,19 @@ len=x=>{
 }
 
 //Boolean type conversion
-tru=x=>(
-  {
-    type:'bool',
-    body:
-      !x?
-        0
-      :x.type=='num'?
-        +(x.body!=0)
-      :x.type=='str'||x.type=='ls'||x.type=='obj'?
-        +!!len(x)
-      :x.type=='bool'?
-        x.body
-      :1
-  }
-)
+tru=x=>({
+  type:'bool',
+  body:
+    !x||x.type=='u'?
+      0
+    :x.type=='num'?
+      +(x.body!=0)
+    :x.type=='str'||x.type=='ls'||x.type=='obj'?
+      +!!len(x)
+    :x.type=='bool'?
+      x.body
+    :1
+})
 
 //Just a console.log wrapper for debugging
 O=x=>(console.log(x),x)
@@ -95,13 +93,16 @@ num=x=>({
   type:'num',
   body:
     l(
-      isNaN(+x)?
+      x==[]._?
+        '0'
+      :isNaN(+x)?
         x.charAt?
           ''+l(x).map(a=>a.codePointAt()).sum()
         :''+len(ls(x))
       :(''+d(''+x))
         .replace(/_/g,'-')
-        .replace(/oo/g,'Infinity'))
+        .replace(/oo/g,'Infinity')
+    )
 })
 str=x=>({type:'str',body:l((x+''))})
 ls=x=>({type:'ls',body:l(x).map(I)})
@@ -117,6 +118,7 @@ pm=(x,y)=>({type:'pm',body:x,f:y})
 ev=(x,y,z)=>({type:'ev',body:x,f:y,g:z})
 defn=(x,y)=>def(ev(y,x,A(0)))
 undef=x=>({type:'u'})
+evald=x=>(x.ev=1,x)
 
 //Source formatting function, with syntax highlighting
 //Should be updated to account for all types/changes to type behaviors
@@ -262,7 +264,7 @@ Ua=(x,y,z)=>tr(x).map(function(a){
 })
 
 //the core evaluation function
-I=(x,z)=>
+I=(x,z,F,G)=>
   !x||(x.type=='num'&&x.body=='NaN')||(x.pop&&!x.length)?
     undef()
   :x.type=='cond'?
@@ -302,9 +304,11 @@ I=(x,z)=>
   :x.type=='var'?
     (vs[x.body.body]=I(x.f))
   :x.type=='fn'&&vs[x.body]?
-    vs[x.body].call?
-      vs[x.body]()
-    :vs[x.body]
+    I(
+      vs[x.body].call?
+        vs[x.body]()
+      :vs[x.body]
+    )
   :x.type=='pm'?
     pm(x.body.map(a=>[I(a[0]),a[1]]),x.f)
   :x.type=='pmv'?
@@ -340,7 +344,11 @@ I=(x,z)=>
     :z.type=='def'?
       I(ua(z,x.f).body)
     :z.type=='pt'?
-      z.rev?cm[I(z).body](I(x.f),z.f):cm[I(z).body](z.f,I(x.f))
+      (
+        F=cm[z.body],
+        G=F.length>2?x.f:I(x.f),
+        z.rev?F(G,z.f):F(z.f,G)
+      )
     :z.type=='pm'?
       I(app(
         (Y=z.body.find(a=>cm.eq(I(a[0]),I(x.f)).body))?

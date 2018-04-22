@@ -74,16 +74,11 @@ bool=a:[TFU]{
 }
 
 //list
-ls='['a:('..'?expr)*']'?{
-  return a.reduce((x,y)=>y[1].big?x:{
-  	type:'app',
-    body:{
-   	  type:'app',
-      body:{type:'fn',body:'++'},
-      f:x
-    },
-    f:y[0]?y[1]:{type:'ls',body:[y[1]]}
-  },{type:'ls',body:[]})
+ls='['a:expr*']'?{
+  return {
+  	type:'ls',
+    body:a.filter(x=>!x.big)
+  }
 }
 //object
 obj='{'_*a:((num/fn/str)_*'\\'_*type _*';'?_*)*_*'}'?{
