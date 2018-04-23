@@ -57,26 +57,27 @@ cm={
   prod:x=>num(x.body.map(a=>x.body.charAt?str(a):a).reduce((a,b)=>d.mul(a,''+num(b.body).body),1)),
   div:(x,y)=>num(d.div(''+num(x.body).body,''+num(y.body).body)),
   mod:(x,y)=>num(d.mod(''+num(x.body).body,''+num(y.body).body)),
-  pow:(x,y)=>
+  pow:(x,y)=>(X=>
     (X=d.pow(''+num(x.body).body,''+num(y.body).body))+''=='NaN'?
       tru(0)
-    :num(X),
+    :num(X)
+  )(),
   exp:x=>num(d.exp(''+num(x.body).body)),
   hypot:(x,y)=>num(d.hypot(''+num(x.body).body,''+num(y.body).body)),
   //factorization
-  fac:x=>ls(
+  fac:x=>(X=>ls(
     _.range(1,(X=Math.abs(0|num(x.body).body))/2+1|0)
       .filter(a=>!(X%a))
       .map(num)
       .concat(num(X))
-  ),
-  pfac:x=>(x=num(Math.abs(+num(x.body).body)),cm.flat(ls(
+  ))(),
+  pfac:x=>(X=>(x=num(Math.abs(+num(x.body).body)),cm.flat(ls(
     +num(x.body).body<2?
       []
     :cm.pr(x).body?
       [x]
     :[num(X=cm.fac(x).body.get(1).body),cm.pfac(num(x.body/X))]
-  ))),
+  ))))(),
   pr:x=>(x=num(Math.abs(+num(x.body).body)),tru(
     +num(x.body).body>1&&
       !cm.fac(x).body.find(a=>
@@ -86,7 +87,7 @@ cm={
   gcd:(x,y)=>num((
     g=(m,n)=>m>n?g(m-n,n):m<n?g(m,n-m):m
   )(Math.abs(0|x.body),Math.abs(0|y.body))),
-  lcm:(x,y)=>(X=0|x.body,Y=0|y.body,X*Y/cm.gcd(x,y)),
+  lcm:(x,y)=>((X,Y)=>(X=0|x.body,Y=0|y.body,X*Y/cm.gcd(x,y)))(),
   //logarithms
   log:(x,y)=>num(d.log(''+num(x.body).body,''+num(y.body).body)),
   ln:x=>num(d.ln(''+num(x.body).body)),
@@ -162,7 +163,7 @@ cm={
       y.body.get(''+x.body)
     :y.body.map(a=>a.charAt?str(a):a).get(0|num(x.body).body)
   )||undef()),
-  set:(x,y)=>
+  set:(x,y)=>(X=>
     y.type=='pm'?
       pm(
         y.body.find(a=>cm.eq(x.body.get(0),a[0]).body)?
@@ -175,8 +176,9 @@ cm={
       b==''+d.mod(''+x.body.get(0).body,len(y))?
         x.body.get(1)
       :a)
-    ),
-  iset:(x,y)=>
+    )
+  )(),
+  iset:(x,y)=>(X=>
     y.type=='pm'?
       pm(y.body.concat([[x.body.get(0),x.body.get(1)]]))
     :y.type=='obj'?
@@ -185,7 +187,8 @@ cm={
       b==''+x.body.get(0).body?
         x.body.get(1)
       :a)
-    ),
+    )
+  )(),
   ins:(x,y)=>
     y.type=='obj'||y.type=='pm'?
       cm.set(x,y)
@@ -209,7 +212,7 @@ cm={
       :obj(Object.assign(x.body.value(),y.body.map(a=>y.body.charAt?str(a):a).value()))
     :cm.flat(ls([x,y])),
   cons:(x,y,O)=>
-    cm.flat(ls([x,y])),
+    cm.flat(ls([ls([x]),y])),
   iO:(x,y)=>ls(y.body.map((a,b)=>cm.eq(y.body.charAt?str(a):a,x).body?num(b):0).filter(a=>a)),
   fiO:(x,y)=>y.body.map((a,b)=>cm.eq(y.body.charAt?str(a):a,x).body?num(b):0).find(a=>a)||tru(0),
   rev:x=>ls(x.body.map(a=>x.body.charAt?str(a):a).reverse()),
@@ -217,10 +220,10 @@ cm={
   sort:(x,y)=>ls(y.body.sortBy(a=>num(I(app(x,y.body.charAt?str(a):a)).body).body)),
 
   //generating sequences
-  rng:(x,y)=>(
+  rng:(x,y)=>((X,Y)=>(
     [X,Y]=[+x.body,+y.body],
     ls(l.generate(a=>num(d.add(a,''+num(x.body).body))).take(Y-X))
-  ),
+  ))(),
   gen:x=>ls(l.generate(a=>app(x,num(a)),1/0)),
   genc:(x,y)=>ls(l.generate(a=>[...Array(a)].reduce(i=>I(app(x,i)),y),1/0)),
   rpt:(x,y)=>ls(l.repeat(y,1/0).take(num(x.body).body)),
@@ -250,18 +253,18 @@ cm={
       .map(i=>i.charAt?str(i):i)
       .uniq(a=>form(a.type=='obj'?obj(a.body.sort().toObject()):a))
   ),
-  inx:(x,y)=>(
+  inx:(x,y)=>((X,Y)=>(
     [X,Y]=[
       x.body.map(a=>x.body.charAt?str(a):a),
       y.body.map(a=>y.body.charAt?str(a):a)
     ],
     ls(X.filter(a=>Y.find(b=>cm.eq(a,b).body)))
-  ),
+  ))(),
   uni:(x,y)=>cm.unq(cm.flat(ls([
     ls(x.body.map(a=>a.charAt?str(a):a)),
     ls(y.body.map(a=>a.charAt?str(a):a))
   ]))),
-  dff:(x,y)=>(
+  dff:(x,y)=>((X,Y)=>(
     [X,Y]=[
       x.body.map(a=>x.body.charAt?str(a):a),
       y.body.map(a=>y.body.charAt?str(a):a)
@@ -270,7 +273,7 @@ cm={
     ls(X.filter(a=>
       !Y.find(b=>cm.eq(a,b).body)
     ))
-  ),
+  ))(),
 
   //nested lists
   chunk:(x,y)=>ls(
@@ -280,13 +283,13 @@ cm={
   ),
   tsp:x=>ls(
     x.body.first().body.map((a,i)=>ls(
-        x.body.map(b=>b.body.get(i)).map(b=>b?b.charAt?str(b):b:tru(0))
+        x.body.map(b=>b.body.get(i)).map(b=>b?b.charAt?str(b):b:undef())
     ))
   ),
   flat:x=>ls(
     x.body.map(a=>x.body.charAt?str(a):a.type=='ls'?a.body:a).flatten()
   ),
-  zip:(x,y)=>cm.map(app(fn('sS'),x),cm.tsp(y)),
+  zip:(x,y)=>ls(cm.tsp(y).body.map(a=>cm.sS(x,a))),
   cns:(x,y)=>ls(
     y.body.map(a=>y.body.charAt?str(a):a)
       .consecutive(0|num(x.body).body)
@@ -358,10 +361,10 @@ cm={
   //flow
   type:x=>str(x.type),
   var:(x,y)=>(vs[x.body]=y),
-  while:(x,y)=>(
+  while:(x,y)=>((X,Y)=>(
     [X,Y]=[x.body.get(0),x.body.get(1)],
     tru(I(app(X,y))).body?cm.while(x,I(app(Y,y))):y
-  ),
+  ))(),
   pkg:x=>pkg(''+x.body),
   eval:x=>parser.parse(''+x.body),
   sh:x=>str(Exec(''+x.body)+''),
