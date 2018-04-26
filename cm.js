@@ -221,9 +221,10 @@ cm={
 
   //generating sequences
   rng:(x,y)=>((X,Y)=>(
-    [X,Y]=[+x.body,+y.body],
-    ls(l.generate(a=>num(d.add(a,''+num(x.body).body))).take(Y-X))
+    [X,Y]=[num(x.body),num(y.body)],
+    ls(l.generate(a=>num(d.add(a,''+X.body))).take(+cm.sub(Y,X).body))
   ))(),
+  irng:(x,y)=>cm.rng(x,cm.add(num(1),y)),
   gen:x=>ls(l.generate(a=>app(x,num(a)),1/0)),
   genc:(x,y)=>ls(l.generate(a=>[...Array(a)].reduce(i=>I(app(x,i)),y),1/0)),
   rpt:(x,y)=>ls(l.repeat(y,1/0).take(num(x.body).body)),
@@ -297,15 +298,11 @@ cm={
   ),
 
   //obj
-  ind:x=>cm.tsp(I(ls(
-    x.type=='obj'?
-      [ls(x.body.keys().map(a=>str(''+a))),ls(x.body.values())]
-    :[cm.rng(num(0),num(len(x))),x]
-  ))),
-  key:x=>cm.tsp(cm.ind(x)).body.first(),
-  val:x=>cm.tsp(cm.ind(x)).body.last(),
-  pk:(x,y)=>obj(y.body.pick(x.body.map(a=>a.body).value())),
-  om:(x,y)=>obj(y.body.omit(x.body.map(a=>a.body).value())),
+  ind:x=>cm.tsp(ls([cm.key(x),cm.val(x)])),
+  key:x=>ls(x.body.map((a,i)=>i.big?str(''+i):num(i))),
+  val:x=>ls(x.body.map(a=>a)),
+  pk:(x,y)=>obj(y.body.pick(x.body.map(a=>''+a.body).value())),
+  om:(x,y)=>obj(y.body.omit(x.body.map(a=>''+a.body).value())),
   obj:x=>obj(
     x.body.map(a=>[
       sform((A=a.body.get(0)).charAt?str(A):A),

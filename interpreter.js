@@ -321,19 +321,10 @@ I=(x,z,F,G)=>
       :vs[x.body]
     )
   :x.type=='lsc'?
-    I(app(
-      app(
-        fn('map'),
-        defn(x.f.body,x.body,A(0))
-      ),
-      app(
-        app(
-          fn('fltr'),
-          defn(x.f.body,x.g,A(0))
-        )
-        ,x.f.f
-      )
-    ))
+    cm.map(
+      I(defn(x.f.body,x.body,A(0))),
+      cm.fltr(I(defn(x.f.body,x.g,A(0))),I(x.f.f))
+    )
   :x.type=='app'?
     (z=I(x.body)).type=='fn'?
       cm[z.body]?
