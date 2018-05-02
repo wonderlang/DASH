@@ -113,14 +113,16 @@ cm={
   tru:x=>tru(tru(x).body||x.type!='bool'),
   //comparisons
   eq:(x,y)=>tru(
-    form(
+    x.type=='ls'&&y.type=='ls'?
+      x.body.every((a,i)=>cm.eq(a,y.body.get(i)))
+    :form(
       x.type=='obj'?obj(x.body.sort().toObject()):x
     )==form(
       y.type=='obj'?obj(y.body.sort().toObject()):y
-    )||
-      (x.body&&y.body&&x.body.charAt&&y.body.charAt&&
-        ''+num(x.body).body==''+num(y.body).body
-      )
+    )||(
+      x.body&&y.body&&x.body.charAt&&y.body.charAt&&
+        ''+str(x.body).body==''+str(y.body).body
+    )
   ),
   Eq:(x,y)=>tru(cm.eq(x,y).body&&x.type==y.type),
   gt:(x,y)=>tru(+d(''+num(x.body).body).cmp(''+num(y.body).body)==1),
